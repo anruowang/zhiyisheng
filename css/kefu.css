@@ -7,9 +7,14 @@
 		}
 		.header{
 			width:100%;
-			height:42px;
-			background: #333;
+			height:48px;
+			background: #F8F8F8;
+			/*border-bottom:1px solid #ccc;*/
 		}
+      	.headerimg{
+        margin-left: 200px;
+        margin-top: 8px;
+      }
 		.main{
 			width: 980px;
 			height: 540px;
@@ -106,7 +111,7 @@
 		}
 		.d4zyimg{
 			position: absolute;
-			left:0px;
+			left:-10px;
 		}
 		#d4 .d4a{
 			position:absolute;
@@ -129,7 +134,7 @@
 			margin-left:100px;
 			width: 76px;
 			height: 28px;
-			background: red;
+			background:#85A4CE;
 			color: #fff;
 			font-size: 14px;
 		}
