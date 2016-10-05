@@ -2,7 +2,7 @@
 function checkemail(obj,zynumber){
 	var reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/g;//邮箱验证
 	if(reg.test($(obj).val())){
-		$("#zynumber").html("用户名验证通过").css({"display":"inline-block","color":"green"});
+		$("#zynumber").html("邮箱验证通过").css({"display":"inline-block","color":"green"});
 		//$(obj).css("border-color","green");
 		return true;
 	}else{
@@ -30,7 +30,7 @@ function getemail(){
 
 //验证密码
 function checkpwd(obj,zypwd){
-	var reg=/\w{6,20}/;
+	var reg=/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/;
 	if(reg.test(obj.value)){
 		$("#"+zypwd).html("密码验证通过").css({"display":"inline-block","color":"green"});
 	}else{		
@@ -50,7 +50,7 @@ function checkname(obj,zyname){
 
 //验证联系方式
 function checktel(obj,zytel){
-	var reg=/\d{11}/;
+	var reg=/^[1][358][0-9]{9}$/;
 	if(reg.test(obj.value)){
 		$("#"+zytel).html("联系方式验证通过").css({"display":"inline-block","color":"green"});
 	}else{		
