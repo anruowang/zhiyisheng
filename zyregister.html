@@ -6,21 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- 移动端的视窗大小和我们的是同一个尺寸 -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>吱一声</title>
+    <title>注册 - 吱一声</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.css" rel="stylesheet" />
-    <link href="css/register.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/zyregister.css" rel="stylesheet" />
    	<link rel="short icon" href="images/logo.png" />
     <style type="text/css">
-     
-
+     	
     </style>
   </head>
   <body> 
     <div class="header">
     <img src="images/menulogo.png" class="headerimg" />
-    
+    <ul class="headerul">
+    	<li><a href="zyregister.html">注册</a></li>
+    	<li><a href="login.html">登录</a></li>
+    </ul>
     </div>
     <div class="main">
       <div class="left">
@@ -44,17 +46,17 @@
                 </li>
                 <li><span>创建密码：</span><input type="password" name="txt" id="pwd" onBlur="checkpwd(this,'zypwd')"><span class="zynumber"  id="zypwd"></span></li>
                 <li><span>姓&nbsp;&nbsp;&nbsp;&nbsp;名：</span><input type="text" name="txt" id="name" onBlur="checkname(this,'zyname')"/><span class="zyname" id="zyname"></span></li>
-                <li><span>性&nbsp;&nbsp;&nbsp;&nbsp;别：</span><input type="radio" name="sex">男
-                <input type="radio" name="sex" checked="yes">女</li>
+                <li><span>性&nbsp;&nbsp;&nbsp;&nbsp;别：</span><input type="radio" name="sex" value="男"/>男
+					<input type="radio" name="sex" checked="yes" value="女" >女</li>
                 <li><span>生日：</span><select name="year">
                 </select>年
                 <select name="month">
                 </select>月
                 <select name="day">
                 </select>日</li>
-                <li><span>我现在：</span><input type="radio" name="work">在工作
-                <input type="radio" name="work">在学习
-                <input type="radio" name="work">其它</li>
+                <li><span>我现在：</span><input type="radio" name="work" value="在工作">在工作
+                <input type="radio" name="work" value="在学习">在学习
+                <input type="radio" name="work" value="其它">其它</li>
                 <li><span>居住地：</span>
                 <select id="selProvince" onChange = "getCity(this.options[this.selectedIndex].value)" style="width: 110px;">
 				        <option value="">-请选择-</option> 
@@ -98,8 +100,8 @@
 				        <option>-城市-</option> 
 				    </select> 
                 </li>
-               <li><input type="checkbox" name="agree" id="agree" checked="yes" /><span> 同意《吱一声服务条款》</span></li>
-               <li><input type="submit" value="立即注册" id="submit" /></li>
+               <li><input type="checkbox" name="agree" id="agree" checked="yes" value="yes" /><span> 同意《吱一声服务条款》</span></li>
+               <li><input type="button" value="立即注册" id="submit" onclick="checkInfo()"/></li>
               </ul>
               </form>             
             </div>
@@ -194,7 +196,7 @@
     <script type="text/javascript" src="js/yearmonth.js"></script>
     <script type="text/javascript" src="js/check.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.js"></script>   
+    <script src="js/bootstrap.min.js"></script>   
     <script type="text/javascript"> 
     yearmonth();   
     //定义 城市 数据数组 

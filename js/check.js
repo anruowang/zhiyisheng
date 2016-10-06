@@ -59,20 +59,31 @@ function checktel(obj,zytel){
 }
 
 function checkInfo(){
-	var sname= $.trim($("#name").val());
-	var pwd= $.trim($("#pwd").val());
-	var sex= $.trim($("#input:radio").val());
+	var eml= $.trim($("#eml").val());//邮箱
+	var emla= $.trim($("#elma").val());//验证码
+	var name= $.trim($("#name").val());//姓名
+	var pwd= $.trim($("#pwd").val());//密码
+	var sex= $.trim($("input[name=sex]:checked").val());//性别
+	var ymd= $.trim($("select[name=year] option:selected").val())//年月日
+		+'\/'+$.trim($("select[name=month] option:selected").val())+'\/'
+		+$.trim($("select[name=day] option:selected").val());
+	var nowdo=$.trim($("input[name=work]:checked").val());//我现在
+	var house=$.trim($("select[id=selProvince] option:selected").val())
+		+' '+$.trim($("select[id=selCity] option:selected").val());//居住地
+	var term= $.trim($("input[name=agree]:checked").val());//同意条款
 
-	var eml= $.trim($("#eml").val());
-	var elma=$.trim($("#elma").val());
-
-	$.post("/adduser",{name:name,pwd:pwd,sex:sex,eml:eml,elma:elma},function(data){
+	$.post("/adduser",{eml:eml,emla:emla,name:name,
+		pwd:pwd,sex:sex,ymd:ymd,nowdo:nowdo,house:house,term:term},function(data){
 		data= $.trim(data);
-		if(data=="5") {
-			alert("注册成功。。。");
-		}else{
-			alert("注册不成功");
-		}
-
+		//switch (data){
+		//	case "1":$("#registertishi").text("用户名不能为空。。。");break;
+		//	case "2":$("#registertishi").text("密码不能为空。。。");break;
+		//	case "3":$("#registertishi").text("两次密码输入不一致。。。");break;
+		//	case "4":$("#registertishi").text("数据库连接失败。。。");break;
+		//	case "5":$("#registertishi").text("数据库添加失败。。。");break;
+		//	case "6":$("#registertishi").text("注册成功。。。");hiddenloginpage();
+		//		break;
+		//	default:$("#registertishi").text("注册失败。。。");break;
+		//}
 	},"text");
 }
