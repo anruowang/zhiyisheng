@@ -1,98 +1,129 @@
 /**
- * Created by Administrator on 16-9-30.
+ * Created by Minexieyu on 2016/10/5.
  */
-var nodemailer=require("nodemailer");
-var express=require("express");
-var session=require("express-session");
-var bodyparser=require("body-parser");
-var app=express();
-var mysql=require("mysql");
+var express=require("express");//创建服务器的
+var session=require("express-session");//session
+var mysql=require("mysql");//操作数据库
+var fs=require("fs");//操作文件或目录的
+var bodyparser=require("body-parser");//处理请求的
+var multer=require("multer");//处理文件上传的
 
-app.use(bodyparser.urlencoded({extend:false}));
+var app=express();//创建一个应用程序
 
+//配置和使用body-parser中间件
+app.use(bodyparser.urlencoded({extended:false}));
+
+//配置和使用session中间件
 app.use(session({
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true,
-    cookie: {secure:false,maxAge:1000*60*20}
+    secret:'keyboard cat',// 私密 session id的标识
+    resave:true,//每次请求是否重新设置session cookie，意思是浏览页面，过晚了59秒，如果在再新一次页面，过期时间重新计算
+    saveUninitialized:true,//session cookie 默认值为connect.sid
+    cookie:{secure:false,maxAge:1000*60*20}//maxAge:意思是过期时间为20分钟 最大失效时间  secure:用于https
+    //secure为true是时，cookie在http中无效 在https中才有效
 }));
+
+var fileUploadPath="/page/zypic";//存入服务器的路径
+var fileUploadPathData="/zypic";//存入数据库中的图片路径，主要要除掉static中的路径
+
+//配置文件上传的中间件
+var upload=multer({dest:"."+fileUploadPath});//上传文件的目录设定
 
 //配置数据库连接池
 var pool=mysql.createPool({
-    host:"localhost",
-    post:3306,
+    host:"127.0.0.1",
+    port:3306,
     database:"zys",
     user:"root",
-    password:"1"
+    password:"aaaa"
 });
 
-var transporter=nodemailer.createTransport({//邮件传输
-    host:"smtp.qq.com", //qq smtp服务器地址
-    secureConnection:false, //是否使用安全连接，对https协议的
-    port:465, //qq邮件服务所占用的端口
-    auth:{
-        user:"1137211995@qq.com",//开启SMTP的邮箱，有用发送邮件
-        pass:"xifynvwbujdkigia"//授权码
+app.get("/",function(req,res){
+    res.sendFile(__dirname+req.url+"/page/login.html");
+});
+
+//监听所有类型的请求，注意此时要将静态中间件放到这个的后面，否则当我们访问静态资源时，不会被这个监听拦截
+app.all("/back/*",function(req,res,next){
+    if(req.session.currentLoginUser==undefined){
+        res.send("<script>location.href='/login.html';</script>");
+    }else{//说明已经登录
+        next();//将请求往下传递给对应的处理方法
     }
 });
 
-app.post("/getlma",function(req,res){ //调用指定的邮箱给用户发送邮件
-
-    var code="";
-    while(code.length<5){
-        code+=Math.floor(Math.random()*10);
-    }
-    var mailOption={
-        from:"1137211995@qq.com",
-        to:req.body.eml,//收件人
-        subject:"吱一声注册校验码",//纯文本
-        html:"<h1>终于等到你，欢迎注册吱一声，您本次的注册验证码为："+code+"</h1>"
-    };
-
-    transporter.sendMail(mailOption,function(error,info){
-        if(error){
-            res.send("1");//邮件发送失败
-            return console.info(error);
-        }else{
-            req.session.yanzhengma=code;
-            res.send("2");//邮件发送成功
-            console.info("Message send: "+code);
-        }
-    })
-})
-
-
-app.post("/adduser",function(req,res){
-            pool.getConnection(function(err,connection){
-                if(err){
-                    res.send("4");//说明数据库连接失败
-                }else {
-                    connection.query("insert into userInfo(uname,usex,upwd,uemail,uaddress,uoffice,umoney) values(?,?,?,?,?,?,?)",
-                        [req.body.name,req.body.sex,req.body.pwd,req.body.eml,req.body.house,
-                            req.body.nowdo,20],function(err,result){
-                        connection.release();//释放连接给连接池
-                        if(err){
-                            res.send("5"+err);//说明添加数据失败
-                        }else {
-                            res.send("6");//注册成功
+//处理登录的请求
+app.post("/xyuserLogin",function(req,res){
+    if(req.body.uname==""){
+        res.send("1");//用户名为空
+    }else if(req.body.pwd==""){
+        res.send("2");//密码为空
+    }else{
+        pool.getConnection(function(err,conn){
+            if(err){
+                res.send("3");//获取数据库连接池失败
+            } else{//查询登录邮箱和密码是否正确
+                conn.query("select uid,uemail,upwd from userinfo where uemail=? and upwd=?",[req.body.uname,req.body.pwd],function(err,result){
+                    conn.release();//释放连接给连接池
+                    if(err){
+                        res.send("4");//数据库查询失败
+                    }else{
+                        if(result.length>0){//说明用户登录成功，则需要将当前用户信息存到session中
+                            req.session.currentLoginUser=result[0];//保存此时用户的数据，便于之后的登录验证
+                            console.info(req.session.currentLoginUser);
+                            res.send("6");
+                        }else{//说明没查询到数据
+                            res.send("5");
                         }
-                    });
+                    }
+                });
+            }
+        });
+    }
+});
+//处理用户是否已经登录的请求
+app.get("/xyuserIsLogin",function(req,res){//如果服务器端session还有值，就表示登录还没过期
+    if(req.session.currentLoginUser==undefined){//此时登录已过期 即处于用户未登录的状态
+        res.send("0");
+    }else{//用户已经登录
+        res.send("z"+req.session.currentLoginUser.uid);//将登录的用户名传过去
+    }
+});
+
+//处理首页获取用户所有信息的请求
+app.get("/xygetAllUserInfo",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");//说明以json形式传去数据
+        if(err){
+            res.send("{'code':'0'}");
+        }else{
+            conn.query("select u.uname,u.upic,u.ubackground,count(n.nid) as ncount,count(f.fid) as fcount from userinfo u,noteinfo n,friendinfo f where u.uid=n.uid and u.uid=f.uid and f.status=1 and u.uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send("{'code':'0'}");
+                    console.info(err);
+                }else{
+                    res.send(result);
                 }
             });
-        //}
+        }
+    });
+});
 
-})
+//处理个人主页显示的请求
+app.get("/xyshowPagePerson",function(req,res){
+    pool.getConnection(function(err,conn){
+        conn.query("select u.uid,u.uname,u. from userinfo u,discussinfo d,answerinfo a,talkinfo t",[],function(err,result){
 
+        });
+    });
+});
 
+//使用静态中间件
+app.use(express.static("page"));//默认到page文件夹下查找静态资源，所有的请求路径从page文件夹开始算
 
-
-
-app.use(express.static(__dirname));
-
-app.listen(8082,function(err){
+app.listen(8888,function(err){
     if(err){
         console.info(err);
     }else{
-        console.info("服务器开启成功。。。");
+        console.info("应用程序启动成功...");
     }
-})
+});
