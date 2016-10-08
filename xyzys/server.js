@@ -22,8 +22,8 @@ app.use(session({
     //secure为true是时，cookie在http中无效 在https中才有效
 }));
 
-var fileUploadPath="/page/pic";//存入服务器的路径
-var fileUploadPathData="/pic";//存入数据库中的图片路径，主要要除掉static中的路径
+var fileUploadPath="/page/zypic";//存入服务器的路径
+var fileUploadPathData="/zypic";//存入数据库中的图片路径，主要要除掉static中的路径
 
 //配置文件上传的中间件
 var upload=multer({dest:"."+fileUploadPath});//上传文件的目录设定

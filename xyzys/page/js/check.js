@@ -17,9 +17,9 @@ function getemail(){
 		var eml= $.trim($("#eml").val());
 		$.post("/getlma",{eml:eml},function(data){
 			data= $.trim(data);
-			if(data=="2"){
+			if(data=="101"){
 				$("#getemails").val("邮件发送成功").attr("disabled",false);
-			}else{
+			}else if(data=="100"){
 				$("#getemails").val("发送失败，点击重新发送").attr("disabled",false);
 			}
 		},"text");
@@ -75,15 +75,13 @@ function checkInfo(){
 	$.post("/adduser",{eml:eml,emla:emla,name:name,
 		pwd:pwd,sex:sex,ymd:ymd,nowdo:nowdo,house:house,term:term},function(data){
 		data= $.trim(data);
-		//switch (data){
-		//	case "1":$("#registertishi").text("用户名不能为空。。。");break;
-		//	case "2":$("#registertishi").text("密码不能为空。。。");break;
-		//	case "3":$("#registertishi").text("两次密码输入不一致。。。");break;
-		//	case "4":$("#registertishi").text("数据库连接失败。。。");break;
-		//	case "5":$("#registertishi").text("数据库添加失败。。。");break;
-		//	case "6":$("#registertishi").text("注册成功。。。");hiddenloginpage();
-		//		break;
-		//	default:$("#registertishi").text("注册失败。。。");break;
-		//}
+		switch (data){
+			case "104":$("#zyzc").text("注册成功,请登录").css("color","green");break;
+			case "105":$("#zyzc").text("邮箱有误").css("color","red");break;
+			case "106":$("#zyzc").text("验证码有误").css("color","red");break;
+			case "107":$("#zyzc").text("密码有误").css("color","red");break;
+			case "108":$("#zyzc").text("姓名有误").css("color","red");break;
+			default:$("#zyzc").text("注册失败。。。").css("color","red");break;
+		}
 	},"text");
 }

@@ -19,11 +19,16 @@
         margin-left:76%;
         list-style: none;
         margin-top: -50px;
+
       }
       .headerul li{
         margin-left: 12px;
         float: left;
+
       }
+	  .headerul li a{
+		  color:#336699;
+	  }
 		.main{
 			width: 980px;
 			height: 540px;

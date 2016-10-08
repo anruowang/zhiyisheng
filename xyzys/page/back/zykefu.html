@@ -75,21 +75,22 @@
 					<img src="../images/about_icon.gif" class="d4zyimg" />
 					<span class="lxkf">意见反馈</span>	
 				</div>
+				<form action="/zyuploadFile" method="post" enctype="multipart/form-data">
 				<p class="d4p1">您好，欢迎提出宝贵建议和意见，您留下的每个字都将被用来改善我们的服务。</p>
 				<p class="d4p5">反馈类型：<select id="selCity"> 
 				        <option>==请选择反馈类型==</option> 
-				        <option>--注册问题--</option> 
-				        <option>--登录问题--</option> 
-				        <option>--密码问题--</option> 
+				        <option>--注册问题--</option>
+				        <option>--登录问题--</option>
 				        <option>--访问质量与速度问题--</option> 
 				        <option>--广告问题--</option> 
 				        <option>--其他问题--</option> 
 				    </select></p>
-				<p class="d4p5">上传截图1：<input type="file" /></p>
-				<p class="d4p5">上传截图2：<input type="file" /></p>
-				<p class="d4p5">上传截图3：<input type="file" /></p>
+				<p class="d4p5">上传截图：<input type="file" name="file" multiple/></p>
+				<!--<p class="d4p5">上传截图2：<input type="file" /></p>-->
+				<!--<p class="d4p5">上传截图3：<input type="file" /></p>-->
 				<p class="d4p5">反馈内容：<textarea cols="58" rows="8"></textarea></p>
-				<input type="button" value="提 交" id="btn" />
+				<input type="submit" value="提 交" id="btn" />
+				</form>
 			</div>
 
 		</div>

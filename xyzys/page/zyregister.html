@@ -54,12 +54,12 @@
                 </select>月
                 <select name="day">
                 </select>日</li>
-                <li><span>我现在：</span><input type="radio" name="work" value="在工作">在工作
+                <li><span>我现在：</span><input type="radio" name="work" value="在工作" checked="yes">在工作
                 <input type="radio" name="work" value="在学习">在学习
                 <input type="radio" name="work" value="其它">其它</li>
                 <li><span>居住地：</span>
                 <select id="selProvince" onChange = "getCity(this.options[this.selectedIndex].value)" style="width: 110px;">
-				        <option value="">-请选择-</option> 
+				        <!--<option value="北京市">北京市</option>-->
 				        <option value="北京市">北京市</option> 
 				        <option value="上海市">上海市</option> 
 				        <option value="天津市">天津市</option> 
@@ -97,11 +97,11 @@
 				        <option value="其它">其它</option> 
 				    </select> 
 				    <select id="selCity"> 
-				        <option>-城市-</option> 
+				        <option>北京市</option>
 				    </select> 
                 </li>
                <li><input type="checkbox" name="agree" id="agree" checked="yes" value="yes" /><span> 同意《吱一声服务条款》</span></li>
-               <li><input type="button" value="立即注册" id="submit" onclick="checkInfo()"/></li>
+               <li><input type="button" value="立即注册" id="submit" onclick="checkInfo()"/> <span id="zyzc"></span></li>
               </ul>
               </form>             
             </div>
@@ -126,7 +126,7 @@
                 <input type="radio" name="work">其它</li>
                 <li><span>居住地：</span>
                 <select id="selProvince2" style="width: 110px;" onChange = "getCity2(this.options[this.selectedIndex].value)">
-				        <option value="">-请选择-</option> 
+				        <option value="">-请选择-</option>
 				        <option value="北京市">北京市</option> 
 				        <option value="上海市">上海市</option> 
 				        <option value="天津市">天津市</option> 
@@ -164,7 +164,7 @@
 				        <option value="其它">其它</option> 
 				    </select> 
 				    <select id="selCity2"> 
-				        <option>-城市-</option> 
+				        <option>-城市-</option>
 				    </select> 
                 </li>
                <li><input type="checkbox" name="agree" id="agree" checked="yes" /><span> 同意《吱一声服务条款》</span></li>
