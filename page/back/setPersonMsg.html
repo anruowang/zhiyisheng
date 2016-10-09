@@ -16,6 +16,11 @@
     <link rel="stylesheet" href="../css/setPersonMsg.css" />
     <link rel="short icon" href="../images/logo.png" />
     <!-- InstanceEndEditable -->
+    <style>
+        .zysettingMsg{
+            display:none;
+        }
+    </style>
 </head>
 <body>
     <!--菜单栏-->
@@ -83,7 +88,7 @@
                     	<i class="glyphicon glyphicon-cog"></i>
                         <span>账户设置</span>
                     </div>
-                    <div class="setting-content">
+                    <div class="setting-content" >
                     	<div class="container" id="container" style="width:54vw;">
                         	<ul class="nav nav-tabs">
                                 <li class="active"><a href="#mineMsg" data-toggle="tab">我的账户</a></li>
@@ -297,7 +302,7 @@
                         <div id="searchPhoto">
                             <div class="container" style="width:54vw; height:85%;margin-left: 0px;">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#myP" data-toggle="tab">我的照片</a></li>
+                                    <li class="active"><a href="#myP"  data-toggle="tab">我的照片</a></li>
                                     <li><a href="#friendP" data-toggle="tab">朋友照片</a></li>
                                 </ul>
                                 <ul class="tab-content" id="tabP"><!--设置选项卡里面的内容-->
@@ -349,6 +354,7 @@
     <script>
         $(yearmonth());
     </script>
+    <script type="text/javascript" src="../js/PagePerson.js"></script>
     <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd --></html>

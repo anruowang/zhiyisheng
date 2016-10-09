@@ -168,6 +168,10 @@
     cursor: pointer;
     color: #fff;
 }
+.middle .content .content-body .content-left .P-List li a{
+    color:#fff;
+    margin-left: 6px;
+}
 .middle .content .content-body .content-left .P-List li:hover{
     background-color: #cbd3e6;
 }

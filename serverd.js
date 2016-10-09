@@ -32,40 +32,39 @@ var pool=mysql.createPool({
     password:"1"
 });
 
-var upload=multer({dest:'page/zypic'});//指定文件上传目录
+//var fileUploadPath="/page/pic";//存入服务器的路径
+//var fileUploadPathData="/pic";//存入数据库中路径，主要除掉static中的路径
+//var upload=multer({dest:"."+fileUploadPath});//上传文件的目录设置//配置文件上传的中间件
+
+var upload=multer({dest:'page/pic'});//指定文件上传目录
 app.post("/zyuploadFile",upload.array("file"),function(req,res){
     console.info(req.files);
     if(req.files==undefined){//说明用户没有选择图片
         res.send();
     }else {
         for (var i = 0; i < req.files.length; i++) {
-            var path = __dirname + "/page/zypic/" + req.files[i].originalname;
+            var path = __dirname + "/page/pic/" + req.files[i].originalname;
             fs.renameSync(req.files[i].path, path);//重命名
         }
     }
-        //console.info(req.body.sugType);
-        //console.info(req.body.sugCon);
-        //console.info(req.files[i].path);
-        //res.send("图片上传成功。。。");
     pool.getConnection(function(err,conn) {
         res.header("Content-Type", "application/json");
         if (err) {
-            res.send("109");//数据库连接失败
+            res.send("0");//数据库连接失败
         } else {
             conn.query("insert into suggestions values(0,?,?,?,?)",
                 [req.session.currentLoginUser.uid, req.body.sugCon,path, req.body.sugType], function (err, result) {
                     conn.release();
                     if (err) {
                         console.info(err);
-                        res.send("110");//插入失败
+                        res.send("1");//插入失败
                     } else {
-                        res.send("111");//插入成功
+                        res.send("2");//插入成功
                     }
                 });
         }
     });
-
-});
+});////////能正确上传反馈意见
 
 var transporter=nodemailer.createTransport({//邮件传输
     host:"smtp.qq.com", //qq smtp服务器地址
@@ -91,10 +90,10 @@ app.post("/getlma",function(req,res){ //调用指定的邮箱给用户发送邮�
 
     transporter.sendMail(mailOption,function(error,info){
         if(error){
-            res.send("100");//邮件发送失败
+            res.send("1");//邮件发送失败
         }else{
             req.session.yanzhengma=code;
-            res.send("101");//邮件发送成功
+            res.send("0");//邮件发送成功
             console.info("Message send: "+code);
         }
     })
@@ -105,17 +104,19 @@ app.post("/adduser",function(req,res){//用户注册
     var reg2=/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/;//密码
     var reg3=/[\u4e00-\u9fa5]{2,6}$/;//名字
     if(!reg1.test(req.body.eml)){
-        res.send("105");//说明邮箱错误
+        res.send("1");//说明邮箱错误
     }else if(req.body.emla != req.session.yanzhengma){
-        res.send("106");//验证码错误
+        res.send("2");//验证码错误
     }else if(!reg2.test(req.body.pwd)){
-        res.send("107");//说明密码错误
+        res.send("3");//说明密码错误
     }else if(!reg3.test(req.body.name)){
-        res.send("108");//说明姓名有误
+        res.send("4");//说明姓名有误
+    } else if(req.body.term!='yes'){
+        res.send("5");//说明没有同意条款
     } else {
         pool.getConnection(function (err, connection) {
             if (err) {
-                res.send("102");//说明数据库连接失败
+                res.send("6");//说明数据库连接失败
             } else {
                 //console.info(req.body.term);
                 if (req.body.emla == req.session.yanzhengma) {
@@ -124,9 +125,9 @@ app.post("/adduser",function(req,res){//用户注册
                             req.body.nowdo, 20, req.body.ymd], function (err, result) {
                             connection.release();//释放连接给连接池
                             if (err) {
-                                res.send("103" + err);//说明添加数据失败
+                                res.send("8" + err);//说明添加数据失败
                             } else {
-                                res.send("104");//注册成功
+                                res.send("7");//注册成功
                             }
                         });
                 }
@@ -196,7 +197,10 @@ app.get("/xygetAllUserInfo",function(req,res){
         if(err){
             res.send("{'code':'0'}");
         }else{
-            conn.query("select u.uname,u.upic,u.ubackground,count(n.nid) as ncount,count(f.fid) as fcount from userinfo u,noteinfo n,friendinfo f where u.uid=n.uid and u.uid=f.uid and f.status=1 and u.uid=?",[req.session.currentLoginUser.uid],function(err,result){
+            conn.query("select u.uname,u.upic,u.ubackground,count(n.nid) as ncount," +
+                "count(f.fid) as fcount from userinfo u,noteinfo n,friendinfo f " +
+                "where u.uid=n.uid and u.uid=f.uid and f.status=1 and u.uid=?",
+                [req.body.uid],function(err,result){
                 conn.release();
                 if(err){
                     res.send("{'code':'0'}");

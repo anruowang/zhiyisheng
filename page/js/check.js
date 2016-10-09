@@ -17,9 +17,9 @@ function getemail(){
 		var eml= $.trim($("#eml").val());
 		$.post("/getlma",{eml:eml},function(data){
 			data= $.trim(data);
-			if(data=="101"){
+			if(data=="0"){
 				$("#getemails").val("邮件发送成功").attr("disabled",false);
-			}else if(data=="100"){
+			}else if(data=="1"){
 				$("#getemails").val("发送失败，点击重新发送").attr("disabled",false);
 			}
 		},"text");
@@ -76,11 +76,12 @@ function checkInfo(){
 		pwd:pwd,sex:sex,ymd:ymd,nowdo:nowdo,house:house,term:term},function(data){
 		data= $.trim(data);
 		switch (data){
-			case "104":$("#zyzc").text("注册成功,请登录").css("color","green");break;
-			case "105":$("#zyzc").text("邮箱有误").css("color","red");break;
-			case "106":$("#zyzc").text("验证码有误").css("color","red");break;
-			case "107":$("#zyzc").text("密码有误").css("color","red");break;
-			case "108":$("#zyzc").text("姓名有误").css("color","red");break;
+			case "7":$("#zyzc").text("注册成功,请登录").css("color","green");break;
+			case "1":$("#zyzc").text("邮箱有误").css("color","red");break;
+			case "2":$("#zyzc").text("验证码有误").css("color","red");break;
+			case "3":$("#zyzc").text("密码有误").css("color","red");break;
+			case "4":$("#zyzc").text("姓名有误").css("color","red");break;
+			case "5":$("#zyzc").text("请勾选同意《吱一声服务条款》").css("color","red");break;
 			default:$("#zyzc").text("注册失败。。。").css("color","red");break;
 		}
 	},"text");

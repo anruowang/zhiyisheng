@@ -31,8 +31,9 @@ var zh="";//存登录了的用户的账号
 function userIsLogin(){
     $.get("/xyuserIsLogin",null,function(data){
         zh= $.trim(data);
+        console.info(zh);
         if(zh!="0"){
-            $("#myName").html(zh);
+            $("#myInfoName").html(zh);
         }else{//如果没有用户登录，则返回登录页面，同时存入的用户账号清空
             window.location.href="../login.html";
             zy="";
