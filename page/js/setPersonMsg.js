@@ -2,19 +2,26 @@
 $(function(){
 	showPersonMsg();
 
-	//设置每个input文本框(text)
+	//设置每个input文本框(text、password)
 	var inpTxt={
 		"border":"1px solid #999",
 		"text-indent":".5em",
 		"height":"2em",
 		"margin-right":"5px"
 	}
-	$("input[type=text]").css(inpTxt)
+	$("input[type=text]").not(".form-control").css(inpTxt)
 		.on("focus",function(){
 			$(this).css("border","1px solid #06f");	
 		})
 		.on("blur",function(){
 			$(this).css("border","1px solid #999");	
+		});
+	$("input[type=password]").css(inpTxt)
+		.on("focus",function(){
+			$(this).css("border","1px solid #06f");
+		})
+		.on("blur",function(){
+			$(this).css("border","1px solid #999");
 		});
 	var nichen=$(".smallPic span").html();
 	$("#nichen").html(nichen);
@@ -72,7 +79,12 @@ function setJiBen(thisObj,showObjId){
 	$(thisObj).parent().children().css(otherOptions);
 	$(thisObj).css(objOptions);
 	$("#mineMsg form").attr("style","display:none");
-	$("#"+showObjId).attr("style","display:block");	
+	$("#"+showObjId).attr("style","display:block");
+	if(showObjId=="jiBen"){
+		showPersonMsg();
+	}else if(showObjId=="geRen"){
+		showGeRenPage();
+	}
 }
 
 //充值的设置
@@ -96,7 +108,6 @@ $("#cz").on("click",function(){
 });
 
 
-
 function showPage(clickId,pageId){
 	$("#"+clickId).click(function(){
 		$(this).parent().children().attr("style","color:#85a4ce")
@@ -108,9 +119,11 @@ function showPage(clickId,pageId){
 	});
 }
 
+//显示个人基本信息
 function showPersonMsg(){
-	$.get("/getPersonMsg",null,function(data){
-		console.info(data);
+	$("#baocunjiben").html("");
+	$.get("/xygetPersonMsg",null,function(data){
+		//console.info(data);
 		var zhanghao=data.uid;
 		var uname=data.uname;
 		var usex=data.usex;
@@ -120,7 +133,10 @@ function showPersonMsg(){
 		var ublood=data.ublood;
 		var uoffice=data.uoffice;
 		var umerry=data.umerry;
-		console.info(year+" "+month+" "+date);
+		var upic=data.upic || "/images/zanwu.jpg";
+		//console.info(year+" "+month+" "+date);
+		$(".smallPic img").attr("src",".."+upic);
+		$("#uname").html(uname);
 		$("#zhanghao").html(zhanghao);
 		$("#nichen").val(uname);
 		$("#usex option[value="+usex+"]").eq(0).attr("selected","selected");
@@ -132,9 +148,9 @@ function showPersonMsg(){
 		$("select option[value="+umerry+"]").attr("selected","selected");
 	});
 }
-
-//保存修改过的个人资料
+//保存修改过的个人基本资料
 function baocunP(){
+	$("#baocunjiben").html("");
 	var uid= $.trim($("#zhanghao").html());
 	var uname= $.trim($("#nichen").val());
 	var usex=$.trim($("#usex option:checked").val());
@@ -145,12 +161,80 @@ function baocunP(){
 	var ublood= $.trim($("#ublood option:selected").val());
 	var uoffice= $.trim($("#uoffice option:selected").val());
 	var umerry= $.trim($("#umerry option:selected").val());
-	$.post("/changejiben",{uid:uid,uname:uname,usex:usex,birthday:birthday,ublood:ublood,uoffice:uoffice,umerry:umerry},function(data){
-		//console.info(data);
-		if(data.code==1){
-			alert("修改成功...");
-		}else if(data.code==0){
-			alert("修改失败，请重试...");///有bug,能修改，但是成功后无法弹出
+
+	$.post("/xychangejiben",{uid:uid,uname:uname,usex:usex,birthday:birthday,ublood:ublood,uoffice:uoffice,umerry:umerry},function(data){
+		if(data==1){
+			$("#baocunjiben").html("修改成功...").css("color","#85a4ce");
+		}else{
+			$("#baocunjiben").html("修改失败，请重试...").css("color","red");
 		}
+	},"text");
+}
+//显示吱币页的数据
+function changezibiPage(){
+	$.get("/xygetMyZiBi",null,function(data){
+		if(data==0){
+			$("#ziBiTishi").html("获取数据失败，请重试...").css("color","red");
+		}
+		var money=data.umoney;
+		$("#currentZiBi").html(money);
 	});
+}
+//显示个人资料页的数据
+function showGeRenPage(){
+	$.get("/xyGeRenInfo",null,function(data){
+		console.info(data);
+		$("#hobby").val(data.uhobby);
+		$("#tel").val(data.utel);
+		$("#Email").val(data.uemail);
+		$("#address").val(data.uaddress);
+	});
+}
+//保存个人资料页的数据
+function baocunGeren(){
+	$("#baocunTishi").html("");
+	var uhobby= $.trim($("#hobby").val());
+	var utel= $.trim($("#tel").val());
+	var uemail=$.trim($("#Email").val());
+	var uaddress= $.trim($("#address").val());
+
+	$.post("/xychangegeren",{uhobby:uhobby,utel:utel,uemail:uemail,uaddress:uaddress},function(data){
+		if(data==0){
+			$("#baocunTishi").html("保存失败，请重试...").css("color","red");
+		}else if(data==1){
+			$("#baocunTishi").html("输入的邮箱与注册邮箱不相符，请重试...").css("color","red");
+		}else if(data==2){
+			$("#baocunTishi").html("保存成功！").css("color","#85a4ce");
+		}
+	},"text");
+}
+//提交修改密码的请求
+function showSetMiMaPage(){
+	$("#errTishi").html("");
+	var oldPwd=$("#oldName").val();
+	var newPwd=$("#currentName").val();
+	var reNewPwd=$("#reCurrName").val();
+	console.info(oldPwd+" "+newPwd+" "+reNewPwd);
+	if(oldPwd==""){
+		$("#errTishi").html("旧密码不能为空...").css("color","red");
+		return;
+	}else if(newPwd==""){
+		$("#errTishi").html("新密码不能为空...").css("color","red");
+		return;
+	}else if(reNewPwd==""){
+		$("#errTishi").html("确认新密码不能为空...").css("color","red");
+		return;
+	}else if(newPwd!=reNewPwd){
+		$("#errTishi").html("两次输入的新密码输入不一致，请重新输入...").css("color","red");
+		return;
+	}
+	$.post("/xysetMiMa",{oldPwd:oldPwd,newPwd:newPwd},function(data){
+		if(data==0){
+			$("#errTishi").html("保存失败，请重试...").css("color","red");
+		}else if(data==1){
+			$("#errTishi").html("原密码输入错误，请重试...").css("color","red");
+		}else if(data==2){
+			$("#errTishi").html("保存成功！").css("color","#85a4ce");
+		}
+	},'text');
 }

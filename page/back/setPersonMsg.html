@@ -16,11 +16,6 @@
     <link rel="stylesheet" href="../css/setPersonMsg.css" />
     <link rel="short icon" href="../images/logo.png" />
     <!-- InstanceEndEditable -->
-    <style>
-        .zysettingMsg{
-            display:none;
-        }
-    </style>
 </head>
 <body>
     <!--菜单栏-->
@@ -45,8 +40,8 @@
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span>账户<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href=""><span class="glyphicon glyphicon-cog"></span>账户设置</a> </li>
-                        <li><a href=""><span class="glyphicon glyphicon-euro"></span>吱币充值</a> </li>
+                        <li><a href="setPersonMsg.html"><span class="glyphicon glyphicon-cog"></span>账户设置</a> </li>
+                        <li><a href="setPersonMsg.html"><span class="glyphicon glyphicon-euro"></span>吱币充值</a> </li>
                         <li><a href=""><span class="glyphicon glyphicon-off"></span>退出</a></li>
                     </ul>
                 </li>
@@ -54,9 +49,8 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-font"></span>关于我们<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-hand-right"></span>团队介绍</a> </li>
-                        <!-- <li><a href=""><span class="glyphicon glyphicon-fire"></span>团队文化</a> </li> -->
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-cutlery"></span>加入我们</a></li>
-                        <li><a href="zykefu.html"><span class="glyphicon glyphicon-earphone"></span>客服</a></li>
+                        <li><a href="zykefu.html"><span class="glyphicon glyphicon-earphone"></span>联系客服</a></li>
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-tree-deciduous"></span>意见反馈</a></li>
                     </ul>
                 </li>
@@ -88,11 +82,11 @@
                     	<i class="glyphicon glyphicon-cog"></i>
                         <span>账户设置</span>
                     </div>
-                    <div class="setting-content" >
+                    <div class="setting-content">
                     	<div class="container" id="container" style="width:54vw;">
                         	<ul class="nav nav-tabs">
                                 <li class="active"><a href="#mineMsg" data-toggle="tab">我的账户</a></li>
-                                <li><a href="#setMoney" data-toggle="tab">吱币充值</a></li>
+                                <li><a href="#setMoney" data-toggle="tab" onclick="changezibiPage()">吱币充值</a></li>
                             </ul>
                             <ul class="tab-content" id="tab-content"><!--设置选项卡里面的内容-->
                                 <li id="mineMsg" class="tab-pane active">
@@ -153,6 +147,7 @@
                                         </p>
                                         <p class="baocunP">
                                         	<input type="button" value="保存修改" onclick="baocunP()" class="btn btn-primary"/>
+                                            <span id="baocunjiben"></span>
                                         </p>
                                         
                                     </form>
@@ -175,46 +170,40 @@
                                         </p>
                                         <p>
                                         	<label>所在地：</label>
-                                            <input type="text" name="address" />
-                                        </p>
-                                        <p>
-                                        	<label>教育情况</label>
-                                            <select>
-                                            	<option value="大学">大学</option>
-                                                <option value="技校">技校</option>
-                                                <option value="高中">高中</option>
-                                                <option value="初中">初中</option>
-                                                <option value="小学">小学</option>
-                                            </select>
+                                            <input type="text" name="address" id="address"/>
                                         </p>
                                         <p class="baocunP">
-                                        	<input type="button" value="保存修改" class="btn btn-primary"/>
+                                        	<input type="button" value="保存修改" class="btn btn-primary" onclick="baocunGeren()"/>
+                                            <span id="baocunTishi"></span>
                                         </p>
                                     </form>
                                     <form action="" method="" id="setMiMa" style="display:none">
                                     	<p>
                                         	<label>原密码：</label>
-                                            <input type="text" name="oldName" />
+                                            <input type="password" name="oldName" id="oldName"/>
                                         </p>
                                         <p>
                                         	<label>新密码：</label>
-                                            <input type="text" name="currentName" />
+                                            <input type="password" name="currentName" id="currentName"/>
                                         </p>
                                         <p>
                                         	<label>确认新密码：</label>
-                                            <input type="text" name="reCurrName" />
+                                            <input type="password" name="reCurrName" id="reCurrName"/>
                                         </p>
                                         <p class="baocunP">
-                                        	<input type="button" value="保存修改" class="btn btn-primary"/>
-                                        </p
-                                    ></form>
+                                        	<input type="button" value="保存修改" class="btn btn-primary" onclick="showSetMiMaPage()"/>
+                                            <span id="errTishi"></span>
+                                        </p>
+
+                                    </form>
                                 </li>
                                 
                                 <li id="setMoney" class="tab-pane">
                                 	<h5>(好消息：新用户首赠<span>20</span>吱币哦!)</h5>
                                     <div class="ziBi">
-                                    	<label>您的现有吱币为：<span id="currentZiBi">20</span></label>
+                                    	<label>您的现有吱币为：<span id="currentZiBi"></span></label>
                                         <input type="button" value="充值" class="btn btn-primary" id="cz"/>
+                                        <p id="ziBiTishi"></p>
                                     </div>
                                     <ul class="czMoney" style="display:none" id="czMoney">
                                     	<li><input type="radio" name="zmoney" value="10"/>10吱币</li>
@@ -302,7 +291,7 @@
                         <div id="searchPhoto">
                             <div class="container" style="width:54vw; height:85%;margin-left: 0px;">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#myP"  data-toggle="tab">我的照片</a></li>
+                                    <li class="active"><a href="#myP" data-toggle="tab">我的照片</a></li>
                                     <li><a href="#friendP" data-toggle="tab">朋友照片</a></li>
                                 </ul>
                                 <ul class="tab-content" id="tabP"><!--设置选项卡里面的内容-->
@@ -354,7 +343,6 @@
     <script>
         $(yearmonth());
     </script>
-    <script type="text/javascript" src="../js/PagePerson.js"></script>
     <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd --></html>

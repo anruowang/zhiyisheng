@@ -12,7 +12,6 @@
 .middle .content .content-head{
     width:100%;
     height:260px;
-    background:url("../images/weather_1.jpg") no-repeat;
     background-size: cover;
     position: relative;
 }
@@ -101,6 +100,7 @@
     background-color:#cbd3e6;
 }
 .middle .content .content-head .Person .PersonPic p .editMsg{
+    display: block;
     color:#fff;
     float: right;
     cursor: pointer;
@@ -113,13 +113,18 @@
 .middle .content .content-head .Person .PersonMsg{
     width:50%;
     float: left;
-    height:100%;
+    height:50%;
     color: #ffffff;
     margin-left: 2em;
 }
 /*头像昵称部分*/
 .middle .content .content-head .Person h2{
     margin:0;
+    width:200px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    -o-text-overflow:ellipsis;
+    overflow:hidden;
 }
 .middle .content .content-head .Person .Msg{
     width:100%;
@@ -135,6 +140,7 @@
     margin-right: 10px;
 }
 .middle .content .content-head .Person .Msg .detailMsg{
+    display: block;
     width:100px;
     background-color: #c0c0c0;
     border:2px solid #9d9d9d;
@@ -169,8 +175,8 @@
     color: #fff;
 }
 .middle .content .content-body .content-left .P-List li a{
+    text-decoration: none;
     color:#fff;
-    margin-left: 6px;
 }
 .middle .content .content-body .content-left .P-List li:hover{
     background-color: #cbd3e6;
@@ -197,9 +203,38 @@
 }
 
 
-/*尾部*/
-.footer{
-    height:100px;
-    width:100%;
-    background: #c0c0c0;
+/*------------------------------------尾部-------------------------------*/
+
+.foot {
+    width: 100%;
+    height: 8%;
+    background: #F8F8F8;
+    position: relative;
+    bottom: 0px;
 }
+
+.foot .foot_us {
+    color: #333;
+    text-align: center;
+    font-size: 13px;
+    padding-top: .5em;
+}
+
+.foot .foot_link {
+    color: #333;
+    font-size: 13px;
+    word-break: break-all;/*允许在单词内换行*/
+    text-align: center;
+    margin-top: -.5em;
+}
+
+.foot_link .link_1 {
+    color: #999;
+    margin-bottom: .1em;
+}
+
+.link_1 a {
+    color: #999;
+}
+
+

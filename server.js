@@ -1,17 +1,18 @@
 /**
- * Created by Minexieyu on 2016/10/5.
+ * Created by Administrator on 16-9-30.
  */
-var express=require("express");//创建服务器的
-var session=require("express-session");//session
-var mysql=require("mysql");//操作数据库
-var fs=require("fs");//操作文件或目录的
-var bodyparser=require("body-parser");//处理请求的
-var multer=require("multer");//处理文件上传的
+var nodemailer=require("nodemailer");
+var express=require("express");
+var session=require("express-session");
+var bodyparser=require("body-parser");
+var app=express();
+var mysql=require("mysql");
+var fs=require("fs");//操作文件的
+var multer=require('multer');//文件上传模块
 
 var app=express();//创建一个应用程序
 
-//配置和使用body-parser中间件
-app.use(bodyparser.urlencoded({extended:false}));
+app.use(bodyparser.urlencoded({extend:false}));//配置和使用body-parser中间件
 
 //配置和使用session中间件
 app.use(session({
@@ -22,21 +23,133 @@ app.use(session({
     //secure为true是时，cookie在http中无效 在https中才有效
 }));
 
-var fileUploadPath="/page/zypic";//存入服务器的路径
-var fileUploadPathData="/zypic";//存入数据库中的图片路径，主要要除掉static中的路径
-
-//配置文件上传的中间件
-var upload=multer({dest:"."+fileUploadPath});//上传文件的目录设定
-
 //配置数据库连接池
 var pool=mysql.createPool({
     host:"127.0.0.1",
-    port:3306,
+    post:3306,
     database:"zys",
     user:"root",
     password:"aaaa"
 });
 
+var fileUploadPath="/page/pic";//存入服务器的路径
+var fileUploadPathData="/pic";//存入数据库中路径，主要除掉static中的路径
+var upload=multer({dest:"."+fileUploadPath});//上传文件的目录设置//配置文件上传的中间件
+
+//上传多张反馈意见图片，每张以，分隔
+app.post("/zyuploadFile",upload.array("file"),function(req,res){
+    //console.info(req.files);
+    if(req.files==undefined){//说明用户没有选择图片
+        res.send();
+    }else {
+        for (var i = 0; i < req.files.length; i++) {
+            var fileName="";
+            var filePath="";
+            var file;
+            if(req.files!=undefined) {
+                for (var i in req.files) {
+                    file = req.files[i];
+                    fileName = new Date().getTime() + "_" + file.originalname;
+                    fs.renameSync(file.path, __dirname + fileUploadPath + "/" + fileName);
+                    if (filePath != "") {
+                        filePath += ",";
+                    }
+                    filePath += fileUploadPathData + "/" + fileName;
+                }
+            }
+        }
+    }
+    pool.getConnection(function(err,conn) {
+        res.header("Content-Type", "application/json");
+        if (err) {
+            res.send("0");//数据库连接失败
+        } else {
+            conn.query("insert into suggestions values(0,?,?,?,?)",
+                [req.session.currentLoginUser.uid, req.body.sugCon,filePath, req.body.sugType], function (err, result) {
+                    conn.release();
+                    if (err) {
+                        console.info(err);
+                        res.send("1");//插入失败
+                    } else {
+                        res.send("2");//插入成功
+                    }
+                });
+        }
+    });
+});
+
+var transporter=nodemailer.createTransport({//邮件传输
+    host:"smtp.qq.com", //qq smtp服务器地址
+    secureConnection:false, //是否使用安全连接，对https协议的
+    port:465, //qq邮件服务所占用的端口
+    auth:{
+        user:"1137211995@qq.com",//开启SMTP的邮箱，有用发送邮件
+        pass:"xifynvwbujdkigia"//授权码
+    }
+});
+
+app.post("/getlma",function(req,res){ //调用指定的邮箱给用户发送邮件
+    var code="";
+    while(code.length<5){
+        code+=Math.floor(Math.random()*10);
+    }
+    var mailOption={
+        from:"1137211995@qq.com",
+        to:req.body.eml,//收件人
+        subject:"吱一声注册校验码",//纯文本
+        html:"<h1>终于等到你，欢迎注册吱一声，您本次的注册验证码为："+code+"</h1>"
+    };
+
+    transporter.sendMail(mailOption,function(error,info){
+        if(error){
+            res.send("1");//邮件发送失败
+        }else{
+            req.session.yanzhengma=code;
+            res.send("0");//邮件发送成功
+            console.info("Message send: "+code);
+        }
+    })
+})
+
+app.post("/adduser",function(req,res){//用户注册
+    var reg1=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/g;//邮箱验证
+    var reg2=/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/;//密码
+    var reg3=/[\u4e00-\u9fa5]{2,6}$/;//名字
+    if(!reg1.test(req.body.eml)){
+        res.send("1");//说明邮箱错误
+    }else if(req.body.emla != req.session.yanzhengma){
+        res.send("2");//验证码错误
+    }else if(!reg2.test(req.body.pwd)){
+        res.send("3");//说明密码错误
+    }else if(!reg3.test(req.body.name)){
+        res.send("4");//说明姓名有误
+    } else if(req.body.term!='yes'){
+        res.send("5");//说明没有同意条款
+    } else {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                res.send("6");//说明数据库连接失败
+            } else {
+                //console.info(req.body.term);
+                if (req.body.emla == req.session.yanzhengma) {
+                    connection.query("insert into userInfo(uname,usex,upwd,uemail,uaddress,uoffice,umoney,birthday) values(?,?,?,?,?,?,?,?)",
+                        [req.body.name, req.body.sex, req.body.pwd, req.body.eml, req.body.house,
+                            req.body.nowdo, 20, req.body.ymd], function (err, result) {
+                            connection.release();//释放连接给连接池
+                            if (err) {
+                                res.send("8" + err);//说明添加数据失败
+                            } else {
+                                res.send("7");//注册成功
+                            }
+                        });
+                }
+            }
+        });
+    }
+})
+
+
+///////////////////////////////////////////////////////////////
 app.get("/",function(req,res){
     res.sendFile(__dirname+req.url+"/page/login.html");
 });
@@ -68,7 +181,7 @@ app.post("/xyuserLogin",function(req,res){
                     }else{
                         if(result.length>0){//说明用户登录成功，则需要将当前用户信息存到session中
                             req.session.currentLoginUser=result[0];//保存此时用户的数据，便于之后的登录验证
-                            console.info(req.session.currentLoginUser);
+                            //console.info(req.session.currentLoginUser);
                             res.send("6");
                         }else{//说明没查询到数据
                             res.send("5");
@@ -95,13 +208,17 @@ app.get("/xygetAllUserInfo",function(req,res){
         if(err){
             res.send("{'code':'0'}");
         }else{
-            conn.query("select u.uname,u.upic,u.ubackground,count(n.nid) as ncount,count(f.fid) as fcount from userinfo u,noteinfo n,friendinfo f where u.uid=n.uid and u.uid=f.uid and f.status=1 and u.uid=?",[req.session.currentLoginUser.uid],function(err,result){
+            conn.query("select u.uname,u.upic,u.ubackground,count(distinct(n.nid)) as ncount,count(distinct(f.fid)) as fcount,count(distinct(t.tid)) as tcount from userinfo as u,noteinfo as n,friendinfo as f,talkinfo as t where u.uid=n.uid and u.uid=f.uid and u.uid=t.uid and f.status=1 and u.uid=?",[req.session.currentLoginUser.uid],function(err,result){
                 conn.release();
                 if(err){
                     res.send("{'code':'0'}");
                     console.info(err);
                 }else{
-                    res.send(result);
+                    if(result.length>0){
+                        res.send(result[0]);
+                    }else{
+                        res.send("{'code':'0'}");
+                    }
                 }
             });
         }
@@ -111,19 +228,160 @@ app.get("/xygetAllUserInfo",function(req,res){
 //处理个人主页显示的请求
 app.get("/xyshowPagePerson",function(req,res){
     pool.getConnection(function(err,conn){
-        conn.query("select u.uid,u.uname,u. from userinfo u,discussinfo d,answerinfo a,talkinfo t",[],function(err,result){
+        res.header("Content-Type","application/json");//说明以json形式传去数据
+        if(err){
+            res.send("{'code':'0'}");
+        }else{
+            conn.query("select uid,uname,birthday,uaddress,upic,ubackground from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send("{'code':'0'}");
+                    console.info(err);
+                }else{
+                    res.send(result[0]);
+                    //res.send("{'code':'1'}");
+                }
+            });
+        }
 
+    });
+});
+
+//处理获取基本资料的请求
+app.get("/xygetPersonMsg",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");//说明以json形式传去数据
+        if(err){
+            console.info("{'code':'0'}");
+        }else{
+            conn.query("select uid,upic,uname,usex,birthday,ublood,umerry,uoffice from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send("{'code':'0'}");
+                }else{
+                    res.send(result[0]);
+                }
+            });
+        }
+    });
+});
+
+//处理修改基本资料的请求
+app.post("/xychangejiben",function(req,res){
+    pool.getConnection(function(err,conn){
+        if(err){
+            res.send("0");
+        }else{
+            conn.query("update userinfo set uname=?,usex=?,birthday=?,ublood=?,uoffice=?,umerry=? where uid=?",[req.body.uname,req.body.usex,req.body.birthday,req.body.ublood,req.body.uoffice,req.body.umerry,req.body.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send("0");
+                }else{
+                    res.send("1");
+                }
+            });
+        }
+    });
+});
+
+//获取用户的现有吱币
+app.get("/xygetMyZiBi",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");
+        conn.query("select umoney from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+            conn.release();
+            if(err){
+                res.send("{'code':'0'}");
+            }else{
+                res.send(result[0]);
+            }
         });
+    });
+});
+
+//处理显示个人资料的请求
+app.get("/xyGeRenInfo",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");
+        if(err){
+            res.send("{'code':'0'}");
+        }else{
+            conn.query("select uhobby,utel,uemail,uaddress from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send("{'code':'0'}");
+                }else{
+                    res.send(result[0]);
+                }
+            });
+        }
+    });
+});
+
+//处理修改个人资料的请求
+app.post("/xychangegeren",function(req,res){
+    pool.getConnection(function(err,conn){
+        if(err){
+            res.send("0");
+        }else{
+            conn.query("select uemail from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                if(err){
+                    res.send("0");
+                }else{
+                    if(result.length>0 && result[0].uemail==req.body.uemail){
+                        conn.query("update userinfo set uhobby=?,utel=?,uaddress=? where uid=?",[req.body.uhobby,req.body.utel,req.body.uaddress,req.session.currentLoginUser.uid],function(err,result){
+                            conn.release();
+                            if(err){
+                                res.send("0");//设置失败
+                            }else{
+                                res.send("2");//设置成功
+                            }
+                        });
+                    }else{
+                        res.send("1");//说明邮箱不是登录的邮箱
+                    }
+                }
+            });
+        }
+    });
+});
+
+//处理重置密码的请求
+app.post("/xysetMiMa",function(req,res){
+    pool.getConnection(function(err,conn){
+        if(err){
+            res.send("0");
+        }else{
+            conn.query("select upwd from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                if(err){
+                    res.send("0");
+                }else{
+                    if(result.length>0 && result[0].upwd==req.body.oldPwd){
+                        conn.query("update userinfo set upwd=? where uid=?",[req.body.newPwd,req.session.currentLoginUser.uid],function(err,result){
+                            conn.release();
+                            if(err){
+                                res.send("0");//设置新密码失败
+                            }else{
+                                res.send("2");//设置成功
+                            }
+                        });
+                    }else{
+                        res.send("1");//说明密码输入错误
+                    }
+                }
+            });
+        }
     });
 });
 
 //使用静态中间件
 app.use(express.static("page"));//默认到page文件夹下查找静态资源，所有的请求路径从page文件夹开始算
+//////////////////////////////////////////////////////////////////////
 
 app.listen(8888,function(err){
     if(err){
         console.info(err);
     }else{
-        console.info("应用程序启动成功...");
+        console.info("服务器开启成功。。。");
     }
-});
+})

@@ -24,7 +24,6 @@ function hideList(){
 
 function showPagePerson(){
     $.get("/xyshowPagePerson",null,function(data){
-        console.info(data);
         var nc=data.uname || data.uid;
         var upic=data.upic || "/images/zanwu.jpg";
         var ubackground={
@@ -40,5 +39,5 @@ function showPagePerson(){
         $("#address").html(data.uaddress);
         $("#ubackground").css(ubackground);
         $("#PersonPic").attr("src",".."+upic);
-    });
+    },'json');
 }

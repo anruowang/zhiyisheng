@@ -77,7 +77,55 @@
             </ul>
         </div>
         <!--内容中间-->
-        <div class="content_middle">内容中间</div>
+        <div class="content_middle">
+            <!--发表记录的整个区域-->
+            <div class="publish">
+                <!--提示与字数限制的切换-->
+                <p id="publish_p"></p>
+                <!--编辑记录的区域-->
+                <div class="com_form">
+                    <textarea class="saytext" id="saytext" name="saytext"></textarea>
+                    <p>
+                        <input type="button" class="sub_btn" value="确定" id="sub_btn"><span class="emotion"></span>
+                        <span class="pic_"></span>
+                    </p>
+                </div>
+            </div>
+            <!--选项卡：全部动态/好友动态-->
+            <div class="dongtai">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#allDynamic" data-toggle="tab">全部动态</a></li>
+                    <li><a href="#myDynamic" data-toggle="tab">我的动态</a></li>
+                </ul>
+                <ul class="tab-content">
+                   <!--全部动态-->
+                    <li id="allDynamic" class="tab-pane active">
+                       <!--一个用户发表的模版-->
+                        <div class="talk_user">
+                            <!--头像+昵称+时间-->
+                            <div class="talk_1">
+                                <img src="../images/xf_3.png" width="50" height="50" class="talk_img" />
+                                <strong>敲级小可耐</strong>
+                                <p>2016/10/4&nbsp;18:40</p>
+                            </div>
+                            <div class="talk_2">
+                                <span class="trangle"></span>
+                                <!--记录的发表位置-->
+                                <div id="showDynamic">啦啦啦啦</div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    
+                    <!--我的动态-->
+                    <li id="myDynamic" class="tab-pane ">bbbbbb</li>
+                </ul>
+            </div>
+
+
+
+            <!--全部动态-->
+        </div>
         <!--内容右侧-->
         <div class="content_right">
             <!--个人信息-->
@@ -86,7 +134,7 @@
                 <div class="myInfoBg" id="myInfoBg">
                     <!--个人头像-->
                     <div class="myInfoPic">
-                        <a id="myInfoImg" href=""></a>
+                        <a id="myInfoImg" href="../back/PagePerson.html"></a>
                     </div>
                 </div>
                 <!--个人信息背景图片下的三小部分-->
@@ -99,7 +147,6 @@
                         </li>
                         <li class="stn" id="stn_span2">
                             <a href=""><strong>消息</strong></a>
-                            <span class="stn_span">xx</span>
                         </li>
                         <li class="stn_last" id="stn_span3">
                             <a href=""><strong>日记</strong></a>
@@ -111,33 +158,32 @@
             <div id="weatherInfo">
                 <iframe width="240" scrolling="no" height="70" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=2&color=%23FFFFFF&icon=1&num=1"></iframe>
             </div>
-            <!--大家正在聊-->
-            <div class="talking">
-                <img src="../images/xf_2.gif" />
-                <!--用户探讨区-->
-                <div class="talk_area">
-                    <div class="talk_user">
-                        <!--头像+昵称+时间-->
-                        <div class="talk_1">
-                            <img src="../images/xf_3.png" width="50" height="50" class="talk_img" />
-                            <strong>敲级小可耐</strong>
-                            <p>2016/10/4&nbsp;18:40</p>
-                        </div>
-                        <div class="talk_2">
-                            <span class="trangle"></span>
-                            <div class="talk_content">啦啦啦啦</div>
-                        </div>
-                    </div>
-                
-                </div>
-                <div class="talk_publish"></div>
+            <!--广告-->
+            <div class="advertisement">广告
+               
             </div>
         </div>
     </div>
 
+    <!--尾部-->
+    <div class="foot">
+        <p class="foot_us">Copyright&copy; 2005 - 2016<strong>丁紫依&谢玉&何璐瑶</strong>All Rights Reserved.</p>
+        <div class="foot_link">
+            <p class="link_1">友情链接：|
+                <a href="http://www.kugou.com/" target="_blank">酷狗音乐</a>|
+                <a href="http://www.cardbaobao.com/" target="_blank">卡宝宝网</a> |
+                <a href="http://www.hitao.com/" target="_blank">嗨淘网</a>|
+                <a href="http://www.fengniao.com/" target="_blank">蜂鸟摄影网</a>|
+                <a href="http://www.7po.com/" target="_blank">奇珀论坛</a>|
+                <a href="http://www.xbiao.com/" target="_blank">世界名表</a>
+            </p>
+        </div>
+    </div>
 
     <script src="../js/jquery-2.0.3.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-browser.js"></script>
+    <script type="text/javascript" src="../js/jquery.qqFace.js"></script>
     <script src="../js/index.js"></script>
 </body>
 
