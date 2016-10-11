@@ -78,11 +78,12 @@ alter table friendInfo auto_increment=1001;
 
 
 create table photoInfo(
-    pid int primary key,
+    pid int primary key aoto_increment,
     uid int not null,
     premarks varchar(100),
     pgroup varchar(100),
-    pstatus int
+    pstatus int,
+    ppath varchar(1000)
 );
 
 

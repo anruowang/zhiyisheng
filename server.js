@@ -29,7 +29,7 @@ var pool=mysql.createPool({
     post:3306,
     database:"zys",
     user:"root",
-    password:"aaaa"
+    password:"1"
 });
 
 var fileUploadPath="/page/pic";//存入服务器的路径
@@ -148,8 +148,64 @@ app.post("/adduser",function(req,res){//用户注册
     }
 })
 
+app.post("/addZypic",upload.array("zymyPic"),function(req,res){//处理所有上传的图片的请求
+    if(req.body.pgroup==""||req.body.premarks==""){
+        res.send("0");
+        console.info(req.body);
+    }else{
+        pool.getConnection(function(err,conn){
+            if(err){
+                res.send("2");//数据库连接失败
+            }else{
+                var fileName="";
+                var filePath="";
+                var file;
+                if(req.files!=undefined){
+                    for(var i in req.files){
+                        file=req.files[i];
+                        fileName=new Date().getTime()+"_"+file.originalname;
+                        fs.renameSync(file.path,__dirname+fileUploadPath+"/"+fileName);
+                        if(filePath!=""){
+                            filePath+=",";
+                        }
+                        filePath+=fileUploadPathData+"/"+fileName;//1.jpg,2.jpg
+                    }
+                }
+                //console.info(filePath);
+                //console.info(req.files);
+                conn.query("insert into photoinfo values(0,?,?,?,?,?)",
+                    [req.session.currentLoginUser.uid,req.body.premarks,req.body.pgroup,"1",filePath],function(err,result){
+                        conn.release();
+                        if(err){
+                            console.info(err);
+                            res.send("3");
+                        }else{
+                            res.send("1");
+                        }
+                    });
+            }
+        });
+    }
+});
 
-///////////////////////////////////////////////////////////////
+app.get("/getAllZymypic",function(req,res){//获取所有用户图片信息
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");
+        if(err){
+            res.send('{"err":"0"}');
+        }else{
+            conn.query("select * from photoinfo where photoinfo.uid=?",[req.session.currentLoginUser.uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send('{"err":"0"}');
+                }else{
+                    res.send(result);
+                }
+            });
+        }
+    });
+});
+/////////////////////////////////////////////////////////////////有bug
 app.get("/",function(req,res){
     res.sendFile(__dirname+req.url+"/page/login.html");
 });
@@ -202,28 +258,32 @@ app.get("/xyuserIsLogin",function(req,res){//如果服务器端session还有值�
 });
 
 //处理首页获取用户所有信息的请求
-app.get("/xygetAllUserInfo",function(req,res){
-    pool.getConnection(function(err,conn){
-        res.header("Content-Type","application/json");//说明以json形式传去数据
-        if(err){
-            res.send("{'code':'0'}");
-        }else{
-            conn.query("select u.uname,u.upic,u.ubackground,count(distinct(n.nid)) as ncount,count(distinct(f.fid)) as fcount,count(distinct(t.tid)) as tcount from userinfo as u,noteinfo as n,friendinfo as f,talkinfo as t where u.uid=n.uid and u.uid=f.uid and u.uid=t.uid and f.status=1 and u.uid=?",[req.session.currentLoginUser.uid],function(err,result){
-                conn.release();
-                if(err){
-                    res.send("{'code':'0'}");
-                    console.info(err);
-                }else{
-                    if(result.length>0){
-                        res.send(result[0]);
-                    }else{
-                        res.send("{'code':'0'}");
-                    }
-                }
-            });
-        }
-    });
-});
+//app.get("/xygetAllUserInfo",function(req,res){
+//    pool.getConnection(function(err,conn){
+//        res.header("Content-Type","application/json");//说明以json形式传去数据
+//        if(err){
+//            res.send("{'code':'0'}");
+//        }else{
+//            conn.query("select u.uname,u.upic,u.ubackground,count(distinct(n.nid)) as ncount," +
+//                "count(distinct(f.fid)) as fcount,count(distinct(t.tid)) as tcount from userinfo as u," +
+//                "noteinfo as n,friendinfo as f,talkinfo as t where u.uid=n.uid and u.uid=f.uid " +
+//                "and u.uid=t.uid and f.status=1 and u.uid=?",
+//                [req.session.currentLoginUser.uid],function(err,result){
+//                conn.release();
+//                if(err){
+//                    res.send("{'code':'0'}");
+//                    console.info(err);
+//                }else{
+//                    if(result.length>0){
+//                        res.send(result[0]);
+//                    }else{
+//                        res.send("{'code':'0'}");
+//                    }
+//                }
+//            });
+//        }
+//    });
+//});
 
 //处理个人主页显示的请求
 app.get("/xyshowPagePerson",function(req,res){

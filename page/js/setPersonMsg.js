@@ -238,3 +238,13 @@ function showSetMiMaPage(){
 		}
 	},'text');
 }
+
+$("#zymyPic").on("click",function(){
+		//发异步请求到服务器
+		$.ajaxFileUpload({
+			url:'/addMypic',
+			secureuri:false,//SSL用于http协议
+			fileElementId:"zyMypic",//要上传的文本框的id
+		});
+
+})
