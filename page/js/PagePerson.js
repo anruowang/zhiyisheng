@@ -24,11 +24,15 @@ function hideList(){
 
 function showPagePerson(){
     $.get("/xyshowPagePerson",null,function(data){
+        if(data.code==0){
+            alert("非常抱歉，获取数据失败，请刷新页面...");
+            return;
+        }
         var nc=data.uname || data.uid;
         var upic=data.upic || "/images/zanwu.jpg";
         var ubackground={
             background:function(){
-                return (data.ubackground || "url('/images/weather_2.jpg')")+" no-repeat";
+                return (data.ubackground || "url('/images/lalala.jpg')")+" no-repeat";
             },
             backgroundSize:"cover"
         }

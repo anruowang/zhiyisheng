@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +10,6 @@
     <link rel="short icon" href="../images/logo.png" />
     <link href="../css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <!--菜单栏-->
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -36,7 +34,7 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span>账户<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href=""><span class="glyphicon glyphicon-cog"></span>账户设置</a> </li>
-                        <li><a href=""><span class="glyphicon glyphicon-euro"></span>吱币充值</a> </li>
+                        <li><a href=""><span class="glyphicon glyphicon-usd"></span>吱币充值</a> </li>
                         <li><a href=""><span class="glyphicon glyphicon-off"></span>退出</a></li>
                     </ul>
                 </li>
@@ -44,16 +42,13 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-font"></span>关于我们<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-hand-right"></span>团队介绍</a> </li>
-                        <!-- <li><a href=""><span class="glyphicon glyphicon-fire"></span>团队文化</a> </li> -->
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-cutlery"></span>加入我们</a></li>
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-earphone"></span>联系客服</a></li>
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-tree-deciduous"></span>意见反馈</a></li>
                     </ul>
                 </li>
-
             </ul>
         </div>
-
     </nav>
 
     <!--内容-->
@@ -77,54 +72,68 @@
             </ul>
         </div>
         <!--内容中间-->
-        <div class="content_middle">
+        <div class="content_middle" id="content_middle">
             <!--发表记录的整个区域-->
             <div class="publish">
                 <!--提示与字数限制的切换-->
                 <p id="publish_p"></p>
                 <!--编辑记录的区域-->
                 <div class="com_form">
-                    <textarea class="saytext" id="saytext" name="saytext"></textarea>
+                    <textarea style='resize: none;' class="saytext" id="saytext" name="saytext"></textarea>
                     <p>
                         <input type="button" class="sub_btn" value="确定" id="sub_btn"><span class="emotion"></span>
                         <span class="pic_"></span>
+                        <input type="file" name="pic" id="pic" onchange="setImagePreviews(this,'publish_img')" multiple/>
                     </p>
                 </div>
             </div>
-            <!--选项卡：全部动态/好友动态-->
-            <div class="dongtai">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#allDynamic" data-toggle="tab">全部动态</a></li>
-                    <li><a href="#myDynamic" data-toggle="tab">我的动态</a></li>
-                </ul>
-                <ul class="tab-content">
-                   <!--全部动态-->
-                    <li id="allDynamic" class="tab-pane active">
-                       <!--一个用户发表的模版-->
-                        <div class="talk_user">
-                            <!--头像+昵称+时间-->
-                            <div class="talk_1">
-                                <img src="../images/xf_3.png" width="50" height="50" class="talk_img" />
-                                <strong>敲级小可耐</strong>
-                                <p>2016/10/4&nbsp;18:40</p>
-                            </div>
-                            <div class="talk_2">
-                                <span class="trangle"></span>
-                                <!--记录的发表位置-->
-                                <div id="showDynamic">啦啦啦啦</div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    
-                    <!--我的动态-->
-                    <li id="myDynamic" class="tab-pane ">bbbbbb</li>
-                </ul>
-            </div>
-
-
-
+            <!--记录图片预览-->
+            <div id="publish_img" style="display:none"></div>
             <!--全部动态-->
+            <div class="dynamic">
+                <!--标题-->
+                <div class="dynamic_head">全部动态</div>
+                <!-- 一个用户发表的模版-->
+                <div class="dynamic_body" id="dynamic_body">
+                    <!--头像+昵称+时间-->
+                    <div class="dynamic_1">
+                        <img src="../images/xf_3.png" width="50" height="50" class="dynamic_img" />
+                        <strong>敲级小可耐</strong>
+                        <p>2016/10/4&nbsp;18:40</p>
+                    </div>
+                    <!--发表的内容-->
+                    <div class="dynamic_2">
+                        <!--记录的发表位置-->
+                        <div id="showDynamic">啦啦啦啦</div>
+                        <!--照片发表的位置-->
+                        <div id="showDynamic_pic">
+                            <img src="../images/login6.jpg" width="400" height="200" />
+                        </div>
+                    </div>
+                    <!--赞，评论，隐藏好友动态-->
+                    <div class="dynamic_3" >
+                        <div class="li_1">
+                            <textarea style='resize: none;' type="text" placeholder="我也要来说一句"  id="comment" ></textarea>
+                            <p class="comment_p" style="display:none" ><span class="emotion_1"></span>
+                                <input type="button" class="com_btn" value="确定" id="com_btn" />
+                            </p>
+                        </div>
+                        <ul >
+                            <li><a href="javascript:;" id="zan_a"><span class="glyphicon glyphicon-thumbs-up" id="zan"> 赞</span></a></li>
+                            <li><a href="javascript:;" ><span class="glyphicon glyphicon-eye-close" id="hid_dynamic"> 隐藏</span></a></li>
+                        </ul>
+                    </div>
+                    <!--好友的评论与楼主的回复-->
+                    <div class="reply">
+                        <p><a href="">我</a>:<span id="reply_1">这桥好长啊</span>
+                            <a href=""><span class="glyphicon glyphicon-comment" ></span></a></p>
+                        <p><a href="">敲级小可耐</a>回复<a href="">我</a>:<span>有机会来看看</span></p>
+                    </div>
+                </div>
+                <div id="showhidden" style="display:none">
+                    <p>加载中，请稍候...</p>
+                </div>
+            </div>
         </div>
         <!--内容右侧-->
         <div class="content_right">
@@ -146,7 +155,7 @@
                             <a href=""><strong>好友</strong></a>
                         </li>
                         <li class="stn" id="stn_span2">
-                            <a href=""><strong>消息</strong></a>
+                            <a href=""><strong>记录</strong></a>
                         </li>
                         <li class="stn_last" id="stn_span3">
                             <a href=""><strong>日记</strong></a>
@@ -160,7 +169,6 @@
             </div>
             <!--广告-->
             <div class="advertisement">广告
-               
             </div>
         </div>
     </div>
@@ -179,12 +187,14 @@
             </p>
         </div>
     </div>
-
+    
     <script src="../js/jquery-2.0.3.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/jquery-browser.js"></script>
     <script type="text/javascript" src="../js/jquery.qqFace.js"></script>
     <script src="../js/index.js"></script>
+    <script src="../js/showPic.js"></script>
+    
 </body>
 
 </html>

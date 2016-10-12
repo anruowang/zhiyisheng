@@ -29,7 +29,8 @@ var pool=mysql.createPool({
     post:3306,
     database:"zys",
     user:"root",
-    password:"1"
+    password:"1",
+    multipleStatements:true
 });
 
 var fileUploadPath="/page/pic";//存入服务器的路径
@@ -111,7 +112,8 @@ app.post("/getlma",function(req,res){ //调用指定的邮箱给用户发送邮�
     })
 })
 
-app.post("/adduser",function(req,res){//用户注册
+//用户注册
+app.post("/adduser",function(req,res){
     var reg1=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/g;//邮箱验证
     var reg2=/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/;//密码
     var reg3=/[\u4e00-\u9fa5]{2,6}$/;//名字
@@ -232,15 +234,16 @@ app.get("/getAllZymypic",function(req,res){//获取所有用户图片信息
         }
     });
 });
-/////////////////////////////////////////////////////////////////有bug
-app.get("/",function(req,res){
-    res.sendFile(__dirname+req.url+"/page/login.html");
+
+///////////////////////////////////////////////////////////////
+app.get("/",function(req,res){//监听"127.0.0.1:8888/"这个路径，指定显示的是login.html页面
+    res.sendFile(__dirname+req.url+"/page/login.html");//必须使用绝对路径
 });
 
 //监听所有类型的请求，注意此时要将静态中间件放到这个的后面，否则当我们访问静态资源时，不会被这个监听拦截
 app.all("/back/*",function(req,res,next){
-    if(req.session.currentLoginUser==undefined){
-        res.send("<script>location.href='/login.html';</script>");
+    if(req.session.currentLoginUser==undefined){//如果用户没有登录
+        res.send("<script>location.href='/login.html';</script>");//返回登录界面
     }else{//说明已经登录
         next();//将请求往下传递给对应的处理方法
     }
@@ -275,7 +278,7 @@ app.post("/xyuserLogin",function(req,res){
         });
     }
 });
-//处理用户是否已经登录的请求
+//处理判断用户是否已经登录的请求
 app.get("/xyuserIsLogin",function(req,res){//如果服务器端session还有值，就表示登录还没过期
     if(req.session.currentLoginUser==undefined){//此时登录已过期 即处于用户未登录的状态
         res.send("0");
@@ -285,48 +288,73 @@ app.get("/xyuserIsLogin",function(req,res){//如果服务器端session还有值�
 });
 
 //处理首页获取用户所有信息的请求
-//app.get("/xygetAllUserInfo",function(req,res){
-//    pool.getConnection(function(err,conn){
-//        res.header("Content-Type","application/json");//说明以json形式传去数据
-//        if(err){
-//            res.send("{'code':'0'}");
-//        }else{
-//            conn.query("select u.uname,u.upic,u.ubackground,count(distinct(n.nid)) as ncount," +
-//                "count(distinct(f.fid)) as fcount,count(distinct(t.tid)) as tcount from userinfo as u," +
-//                "noteinfo as n,friendinfo as f,talkinfo as t where u.uid=n.uid and u.uid=f.uid " +
-//                "and u.uid=t.uid and f.status=1 and u.uid=?",
-//                [req.session.currentLoginUser.uid],function(err,result){
-//                conn.release();
-//                if(err){
-//                    res.send("{'code':'0'}");
-//                    console.info(err);
-//                }else{
-//                    if(result.length>0){
-//                        res.send(result[0]);
-//                    }else{
-//                        res.send("{'code':'0'}");
-//                    }
-//                }
-//            });
-//        }
-//    });
-//});
+app.get("/xygetAllUserInfo",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");//说明以json形式传去数据
+        if(err){
+            res.send('{"code":"0"}');
+        }else{
+            var sql="select u.uid,u.uname,u.upic,";
+            sql+="(select count(t.tid) from userinfo u,talkinfo t where u.uid=t.uid and u.uid=?) as tcount,";
+            sql+="(select count(distinct(f.fid)) from userinfo u,friendinfo f where u.uid=f.uid and u.uid=?) as fcount,";
+            sql+="(select count(n.nid) from userinfo u,noteinfo n where u.uid=n.uid and u.uid=?) as ncount";
+            sql+=" from userinfo u where u.uid=?";
+            var uid=req.session.currentLoginUser.uid;
+            conn.query(sql,[uid,uid,uid,uid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send('{"code":"0"}');
+                    console.info(err);
+                }else{
+                    if(result.length>0){
+                        res.send(result[0]);
+                    }else{
+                        res.send("0");
+                    }
+                }
+            });
+        }
+    });
+});
+
+//处理首页获取用户和好友说说记录的请求
+app.get("/xygetAllTalkData",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");
+        if(err){
+            res.send('{"code":"0"}');
+        }else{
+            var sql="select DISTINCT(u.uid),u.upic,u.uname,u.usex,";
+            sql+="t.* from talkinfo t,friendinfo f,userinfo u where t.uid in (?,(select f.fid from friendinfo f where f.uid=?)) ";
+            sql+="and t.uid=u.uid and u.uid=f.uid and f.status=1 ORDER BY ttime DESC";
+            var queryid=req.session.currentLoginUser.uid;
+            conn.query(sql,[queryid,queryid],function(err,result){
+                conn.release();
+                if(err){
+                    res.send('{"code":"0"}');
+                }else{
+                    //res.send('{"code":"1"}');
+                    res.send(result);
+                }
+            });
+        }
+    });
+});
 
 //处理个人主页显示的请求
 app.get("/xyshowPagePerson",function(req,res){
     pool.getConnection(function(err,conn){
         res.header("Content-Type","application/json");//说明以json形式传去数据
         if(err){
-            res.send("{'code':'0'}");
+            res.send('{"code":"0"}');
         }else{
             conn.query("select uid,uname,birthday,uaddress,upic,ubackground from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
                 conn.release();
                 if(err){
-                    res.send("{'code':'0'}");
+                    res.send('{"code":"0"}');
                     console.info(err);
                 }else{
                     res.send(result[0]);
-                    //res.send("{'code':'1'}");
                 }
             });
         }
@@ -339,12 +367,12 @@ app.get("/xygetPersonMsg",function(req,res){
     pool.getConnection(function(err,conn){
         res.header("Content-Type","application/json");//说明以json形式传去数据
         if(err){
-            console.info("{'code':'0'}");
+            console.info('{"code":"0"}');
         }else{
             conn.query("select uid,upic,uname,usex,birthday,ublood,umerry,uoffice from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
                 conn.release();
                 if(err){
-                    res.send("{'code':'0'}");
+                    res.send('{"code":"0"}');
                 }else{
                     res.send(result[0]);
                 }
@@ -371,14 +399,14 @@ app.post("/xychangejiben",function(req,res){
     });
 });
 
-//获取用户的现有吱币
+//处理获取用户的现有吱币的请求
 app.get("/xygetMyZiBi",function(req,res){
     pool.getConnection(function(err,conn){
         res.header("Content-Type","application/json");
         conn.query("select umoney from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
             conn.release();
             if(err){
-                res.send("{'code':'0'}");
+                res.send('{"code":"0"}');
             }else{
                 res.send(result[0]);
             }
@@ -391,12 +419,12 @@ app.get("/xyGeRenInfo",function(req,res){
     pool.getConnection(function(err,conn){
         res.header("Content-Type","application/json");
         if(err){
-            res.send("{'code':'0'}");
+            res.send('{"code":"0"}');
         }else{
             conn.query("select uhobby,utel,uemail,uaddress from userinfo where uid=?",[req.session.currentLoginUser.uid],function(err,result){
                 conn.release();
                 if(err){
-                    res.send("{'code':'0'}");
+                    res.send('{"code":"0"}');
                 }else{
                     res.send(result[0]);
                 }
@@ -461,9 +489,28 @@ app.post("/xysetMiMa",function(req,res){
     });
 });
 
+//////////////////////////////////////////////////////////////////////
+app.get("/xfFriend",function(req,res){
+    pool.getConnection(function(err,conn){
+        res.header("Content-Type","application/json");
+        if(err){
+            res.send("{'code':'0'}");
+        }else{
+            conn.query("select * from userinfo",function(err,result){
+                conn.release();
+                if(err){
+                    res.send("{'code':'0'}");
+                }else{
+                    res.send(result[0]);
+                }
+            });
+        }
+    });
+});
+//////////////////////////////////////////////////////////////////////
+
 //使用静态中间件
 app.use(express.static("page"));//默认到page文件夹下查找静态资源，所有的请求路径从page文件夹开始算
-//////////////////////////////////////////////////////////////////////
 
 app.listen(8888,function(err){
     if(err){

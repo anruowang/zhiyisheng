@@ -80,12 +80,11 @@ alter table friendInfo auto_increment=1001;
 
 //7、用户的照片表信息
 create table photoInfo(
-    pid int primary key,//照片id
+    pid int primary key,//照片id(路径)
     uid int not null,//用户id
     premarks varchar(100),//照片的备注
     pgroup varchar(100),//照片所属的组别
     pstatus int//照片状态
-    ppath varchar(1000);
 );
 
 //8、礼物类型信息

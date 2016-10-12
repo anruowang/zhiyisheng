@@ -54,9 +54,7 @@ p {
     margin: 0 0 9px 0;
 }
 
-
 /* hn */
-
 h1,
 h2 {
     line-height: 36px;
@@ -93,9 +91,7 @@ h6 {
     font-size: 12px;
 }
 
-
 /* ul ol dl */
-
 ul,
 ol {
     margin: 0 0 18px 0;
@@ -145,9 +141,7 @@ dd {
     padding: 0;
 }
 
-
 /* html5 */
-
 article,
 aside,
 dialog,
@@ -160,9 +154,7 @@ section {
     display: block;
 }
 
-
 /* clearfix */
-
 .clearfix:before,
 .clearfix:after {
     content: "";

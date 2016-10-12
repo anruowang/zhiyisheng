@@ -3,9 +3,9 @@ function setImagePreviews(imagesObj,divid) {
     dd.style.display="block";
     dd.innerHTML = "";
     var fileList = imagesObj.files;
-    for (var i = 0; i < fileList.length; i++) {            
+    for (var i = 0; i < fileList.length; i++) {
         dd.innerHTML += "<div style='float:left' > <img id='img" + i + "'  /> </div>";
-        var imgObjPreview = document.getElementById("img"+i); 
+        var imgObjPreview = document.getElementById("img"+i);
         if (imagesObj.files && imagesObj.files[i]) {
             //火狐下，直接设img属性
             imgObjPreview.style.display = 'block';
@@ -34,6 +34,6 @@ function setImagePreviews(imagesObj,divid) {
             imgObjPreview.style.display = 'none';
             document.selection.empty(); //在当前网页下不能选择对象,也就是鼠标不能选中 
         }
-    }  
+    }
     return true;
 }

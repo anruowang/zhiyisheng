@@ -11,96 +11,11 @@
     <!-- Bootstrap -->
     <link href="../css/resert.css" rel="stylesheet" />
     <link href="../css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/index2.css" />
     <link rel="stylesheet" href="../css/PagePerson.css" />
     <link rel="stylesheet" href="../css/setPersonMsg.css" />
     <link rel="short icon" href="../images/logo.png" />
-    <script type="text/javascript" src="../js/showPic.js"></script>
     <!-- InstanceEndEditable -->
-    <style>
-        #zymyPic{
-            position:relative;
-            left:46%;
-            top:-28px;
-            filter:alpha(opacity=0);
-            opacity: 0;
-            -moz-opacity:0;
-            width:160px;
-            height:28px;
-            z-index:100;
-        }
-        #zymyPic2{
-            width:160px;
-            height:28px;
-            line-height:28px;
-            background:#336699;
-            color:#fff;
-            position:relative;
-            left: 46%;
-            top:-56px;
-        }
-        .button1{
-            width:60px;
-            height:28px;
-            line-height:28px;
-            background:#336699;
-            color:#fff;
-            position:relative;
-            left: 48%;
-            top:-56px;
-        }
-        #Button1{
-            background:#fff;
-            color:#ccc;
-            font-size:12px;
-        }
-        .black_overlay{
-            display: none;
-            position: absolute;
-            top: 0%;
-            left: 0%;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            z-index:1001;
-            -moz-opacity: 0.8;
-            opacity:.80;
-            filter: alpha(opacity=80);
-        }
-        .white_content {
-            display: none;
-            position: absolute;
-            top: 6%;
-            left: 10%;
-            width: 80%;
-            height: 80%;
-            border: 8px solid lightblue;
-            border-radius: 10px 10px 0 0;
-            background-color: white;
-            z-index:1002;
-            overflow: auto;
-        }
-        .white_content_small {
-            display: none;
-            position: absolute;
-            top: 20%;
-            left: 30%;
-            width: 40%;
-            height: 60%;
-            border: 16px solid lightblue;
-            background-color: white;
-            z-index:1002;
-            overflow: auto;
-        }
-        .close{
-            margin-right:10px;
-        }
-        .zyimg{
-            margin-left:20px;
-            margin-top:20px;
-            border:2px solid #ccc;
-        }
-    </style>
 </head>
 <body>
     <!--菜单栏-->
@@ -119,8 +34,8 @@
             <ul class="nav navbar-nav ">
                 <li><a href="index.html"><span class="glyphicon glyphicon-home " ></span>首页</a></li>
                 <li><a href="PagePerson.html"><span class="glyphicon glyphicon-tree-conifer"></span>个人主页</a></li>
-                <li><a href=""><span class="glyphicon glyphicon-heart-empty"></span>好友</a></li>
-                <li><a href=""><span class="glyphicon glyphicon-picture"></span>照片</a></li>
+                <li><a href="javascript:changeRightPage('myFriend','settingF')"><span class="glyphicon glyphicon-heart-empty"></span>好友</a></li>
+                <li><a href="javascript:changeRightPage('myPic','settingP')"><span class="glyphicon glyphicon-picture"></span>照片</a></li>
                 <li><a href=""><span class="glyphicon glyphicon-comment"></span>消息<span class="badge" id="badge">1</span></a></li>
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span>账户<span class="caret"></span></a>
@@ -139,10 +54,8 @@
                         <li><a href="zykefu.html"><span class="glyphicon glyphicon-tree-deciduous"></span>意见反馈</a></li>
                     </ul>
                 </li>
-
             </ul>
         </div>
-
     </nav>
 
     <div class="middle">
@@ -155,8 +68,9 @@
                         <span id="uname">昵称</span>
                     </div>
                     <ul class="P-List" id="P-List">
+                        <li id="setInfo" onclick="showPersonMsg()"><i class="glyphicon glyphicon-cog"></i> 账户设置 </li>
                         <li id="myPic"><i class="glyphicon glyphicon-picture"></i> 我的照片
-                            <input id="Button1" type="button" value="上传" onclick="ShowDiv('MyDiv','fade')" /> </li>
+                            <input id="Button1" type="button" value="上传" onclick="ShowDiv('MyDiv','fade')" /></li>
                         <li id="myDate"><i class="glyphicon glyphicon-pencil"></i> 我的日记 </li>
                         <li id="myTalk"><i class="glyphicon glyphicon-comment"></i> 我的记录 </li>
                         <li id="myFriend"><i class="glyphicon glyphicon-hdd"></i> 我的好友 </li>
@@ -235,7 +149,6 @@
                                         	<input type="button" value="保存修改" onclick="baocunP()" class="btn btn-primary"/>
                                             <span id="baocunjiben"></span>
                                         </p>
-                                        
                                     </form>
                                     <form action="" method="" id="geRen" style="display:none">
                                     	<p>
@@ -283,7 +196,6 @@
 
                                     </form>
                                 </li>
-                                
                                 <li id="setMoney" class="tab-pane">
                                 	<h5>(好消息：新用户首赠<span>20</span>吱币哦!)</h5>
                                     <div class="ziBi">
@@ -376,16 +288,9 @@
                     <div class="setting-content" id="pContent">
                         <div id="searchPhoto">
                             <div class="container" style="width:58vw; height:80%;margin-left: 0px;">
-                                <!--<ul class="nav nav-tabs">-->
-                                    <!--<li class="active"><a href="#myP" data-toggle="tab">我的照片</a></li>-->
-                                    <!--<li><a href="#friendP" data-toggle="tab">朋友照片</a></li>-->
-                                <!--</ul>-->
                                 <ul><!--设置选项卡里面的内容-->
                                     <li id="myP" class="tab-pane active">
-                                        <!--<input id="Button1" type="button" value="上传照片" onclick="ShowDiv('MyDiv','fade')" />-->
-                                        <div  id="showZymypic" >
-
-                                        </div>
+                                        <div  id="showZymypic" ></div>
                                         <!--弹出层时背景层DIV-->
                                         <div id="fade" class="black_overlay"></div>
                                         <div id="MyDiv" class="white_content">
@@ -393,20 +298,16 @@
                                                 <span class="close" onclick="CloseDiv('MyDiv','fade')">X</span>
                                             </div>
                                             <div class="topPic">
-                                            &nbsp;&nbsp;&nbsp;相册名称：<input type="text" name="pgroup" id="pgroup"/>
-                                            照片描述：<input type="text" name="premarks" id="premarks"/>
-                                            <input type="file" id="zymyPic" name="zymyPic" accept="image/*" onchange="setImagePreviews(this,'showPic')" multiple/>
-                                            <input type="button" id="zymyPic2" value="选择照片"/>
-                                            <input type="button" class="button1" value="添加" onclick="addZypic()"/>
+                                                &nbsp;&nbsp;&nbsp;相册名称：<input type="text" name="pgroup" id="pgroup"/>
+                                                照片描述：<input type="text" name="premarks" id="premarks"/>
+                                                <input type="file" id="zymyPic" name="zymyPic" accept="image/*" onchange="setImagePreviews(this,'showPic')" multiple/>
+                                                <input type="button" id="zymyPic2" value="选择照片"/>
+                                                <input type="button" class="button1" value="添加" onclick="addZypic()"/>
                                             </div>
                                             <div id="showPic">
                                             </div>
                                         </div>
-
                                     </li>
-                                    <!--<li id="friendP" class="tab-pane">-->
-                                        <!--朋友还没有照片-->
-                                    <!--</li>-->
                                 </ul>
                             </div>
                         </div>
@@ -446,88 +347,10 @@
     <!--bootstrap是基于jquery的，所以要先引入jquery-->
     <script src="../js/jquery-2.0.3.js"></script>
     <script src="../js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../js/setPersonMsg.js"></script>
     <script type="text/javascript" src="../js/yearmonth.js"></script>
+    <script type="text/javascript" src="../js/setPersonMsg.js"></script>
     <script type="text/javascript" src="../js/ajaxfileupload.js"></script>
     <script type="text/javascript" src="../js/showPic.js"></script>
-    <script>
-        $(
-                yearmonth()
-        );
-    </script>
-    <script type="text/javascript">
-        //弹出隐藏层
-        function ShowDiv(show_div,bg_div){
-            document.getElementById(show_div).style.display='block';
-            document.getElementById(bg_div).style.display='block' ;
-            var bgdiv = document.getElementById(bg_div);
-            bgdiv.style.width = document.body.scrollWidth;
-            bgdiv.style.height = $(document).height();
-            $("#"+bg_div).height($(document).height());
-            $(".navbar").hide();
-        };
-        //关闭弹出层
-        function CloseDiv(show_div,bg_div)
-        {
-            document.getElementById(show_div).style.display='none';
-            document.getElementById(bg_div).style.display='none';
-            $(".navbar").show();
-        };
-        //添加图片
-        function addZypic(){
-            var pgroup= $.trim($("#pgroup").val());
-            var premarks= $.trim($("#premarks").val());
-            console.info(pgroup);
-            //发异步请求到服务器
-            $.ajaxFileUpload({
-                url:'/addZypic',
-                secureuri:false,//SSL用于http协议
-                fileElementId:"zymyPic",//要上传的文本框的id
-                data:{pgroup:pgroup,premarks:premarks},
-                dataType:"json",
-                success:function(data,status){
-                    data= $.trim(data);
-                    if(data=="1"){
-                        $(".pgroup").val("");
-                        $(".premarks").val("");
-                        $("#zypic").val("");
-                        $("#showpic").html();
-                        alert("图片上传成功...");
-                    }else{
-                        alert("图片上传失败...");
-                    }
-                },
-                error:function(data,status,e){
-                    alert(e);
-                }
-            });
-        }
-        //显示所有的用户图片
-            $.get("/getAllZymypic", null, function (data) {
-                var str;
-                var pic;
-                var pics;
-                var picStr = "";
-                console.info(data);
-                $.each(data, function (index, item) {
-                    picStr = "";
-                    console.info(item.ppath);
-                    pic = item.ppath;
-                    if (pic.indexOf(",")) {
-                        pics = pic.split(",");
-                        for (var i = 0; i < pics.length; i++) {
-                            picStr += "<img class='zyimg' src='../.." + pics[i] + "'width='100px' height='100px'/>";
-                        }
-                    } else if (pic != "") {
-                        picStr += "<img class='zyimg' src='../.." + pic + "'width='100px' heigth='100px' />";
-                    } else {
-                        //没有图片
-                    }
-                    str =  picStr ;
-                    $("#showZymypic").append($(str));
-                });
-            }, "json")
-    </script>
     <!-- InstanceEndEditable -->
 </body>
 <!-- InstanceEnd --></html>

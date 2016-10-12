@@ -1,7 +1,5 @@
 // JavaScript Document
 $(function(){
-	showPersonMsg();
-
 	//设置每个input文本框(text、password)
 	var inpTxt={
 		"border":"1px solid #999",
@@ -34,7 +32,9 @@ $(function(){
 	//邮箱
 	var emailReg=/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
 	piPei("Email",emailReg);
-	
+
+	//账户设置界面显示出来
+	showPage("setInfo","settingMsg");
 	
 	//我的照片界面显示出来
 	showPage("myPic","settingP");
@@ -50,6 +50,25 @@ $(function(){
 	
 	//我的礼物页面显示出来
 	showPage("myGift","settingG");
+
+	//调用函数显示年月日
+	yearmonth();
+
+	//锚记，跳转到响应的位置，如在个人主页点击照片跳转到修改信息的我的照片
+	var maoji=(location.hash).substring(1);
+	if(maoji=="mypic"){
+		changeRightPage("myPic","settingP");
+	}else if(maoji=="note"){
+		changeRightPage("myDate","settingD");
+	}else if(maoji=="talk"){
+		changeRightPage("myTalk","settingT");
+	}else if(maoji=="friend"){
+		changeRightPage("myFriend","settingF");
+	}else if(maoji=="gift"){
+		changeRightPage("myGift","settingG");
+	}else{
+		showPersonMsg();
+	}
 	
 });
 
@@ -66,15 +85,15 @@ function piPei(objId,reg){
 	});
 }
 
-//切换 我的账户 里面的信息
+////切换 我的账户 里面的信息
 function setJiBen(thisObj,showObjId){
 	var objOptions={
 		"color":"#000",
-		"cursor":"default"	
+		"cursor":"default"
 	}
 	var otherOptions={
 		"color":"#06f",
-		"cursor":"pointer"	
+		"cursor":"pointer"
 	}
 	$(thisObj).parent().children().css(otherOptions);
 	$(thisObj).css(objOptions);
@@ -123,6 +142,10 @@ function showPage(clickId,pageId){
 function showPersonMsg(){
 	$("#baocunjiben").html("");
 	$.get("/xygetPersonMsg",null,function(data){
+		if(data.code==0){
+			alert("非常抱歉，获取个人信息失败，请刷新重试...");
+			return;
+		}
 		//console.info(data);
 		var zhanghao=data.uid;
 		var uname=data.uname;
@@ -173,8 +196,9 @@ function baocunP(){
 //显示吱币页的数据
 function changezibiPage(){
 	$.get("/xygetMyZiBi",null,function(data){
-		if(data==0){
+		if(data.code==0){
 			$("#ziBiTishi").html("获取数据失败，请重试...").css("color","red");
+			return;
 		}
 		var money=data.umoney;
 		$("#currentZiBi").html(money);
@@ -183,11 +207,15 @@ function changezibiPage(){
 //显示个人资料页的数据
 function showGeRenPage(){
 	$.get("/xyGeRenInfo",null,function(data){
-		console.info(data);
+		if(data.code==0){
+			alert("非常抱歉，获取数据失败，请重新加载...");
+			return;
+		}
 		$("#hobby").val(data.uhobby);
 		$("#tel").val(data.utel);
 		$("#Email").val(data.uemail);
 		$("#address").val(data.uaddress);
+
 	});
 }
 //保存个人资料页的数据
@@ -239,12 +267,86 @@ function showSetMiMaPage(){
 	},'text');
 }
 
-$("#zymyPic").on("click",function(){
-		//发异步请求到服务器
-		$.ajaxFileUpload({
-			url:'/addMypic',
-			secureuri:false,//SSL用于http协议
-			fileElementId:"zyMypic",//要上传的文本框的id
-		});
+//点击跳转到显示我的照片
+function changeRightPage(objid,showid){
+	$("#"+objid).parent().children().attr("style","color:#85a4ce")
+		.children("i").attr("style","color:#85a4ce");
+	$("#"+objid).css("color","#0000FF")
+		.children("i").css("color","#0000FF");
+	$("#contentLeft").siblings().attr("style","display:none");
+	$("#"+showid).attr("style","display:block");
 
-})
+}
+
+//上传照片，弹出隐藏层
+function ShowDiv(show_div,bg_div){
+	document.getElementById(show_div).style.display='block';
+	document.getElementById(bg_div).style.display='block' ;
+	var bgdiv = document.getElementById(bg_div);
+	bgdiv.style.width = document.body.scrollWidth;
+	bgdiv.style.height = $(document).height();
+	$("#"+bg_div).height($(document).height());
+	$(".navbar").hide();
+};
+//上传照片，关闭弹出层
+function CloseDiv(show_div,bg_div)
+{
+	document.getElementById(show_div).style.display='none';
+	document.getElementById(bg_div).style.display='none';
+	$(".navbar").show();
+};
+
+//添加图片
+function addZypic(){
+	var pgroup= $.trim($("#pgroup").val());
+	var premarks= $.trim($("#premarks").val());
+	console.info(pgroup);
+	//发异步请求到服务器
+	$.ajaxFileUpload({
+		url:'/addZypic',
+		secureuri:false,//SSL用于http协议
+		fileElementId:"zymyPic",//要上传的文本框的id
+		data:{pgroup:pgroup,premarks:premarks},
+		dataType:"json",
+		success:function(data,status){
+			data= $.trim(data);
+			if(data=="1"){
+				$(".pgroup").val("");
+				$(".premarks").val("");
+				$("#zypic").val("");
+				$("#showpic").html();
+				alert("图片上传成功...");
+			}else{
+				alert("图片上传失败...");
+			}
+		},
+		error:function(data,status,e){
+			alert(e);
+		}
+	});
+}
+//显示所有的用户图片
+$.get("/getAllZymypic", null, function (data) {
+	var str;
+	var pic;
+	var pics;
+	var picStr = "";
+	console.info(data);
+	$.each(data, function (index, item) {
+		picStr = "";
+		console.info(item.ppath);
+		pic = item.ppath;
+		if (pic.indexOf(",")) {
+			pics = pic.split(",");
+			for (var i = 0; i < pics.length; i++) {
+				picStr += "<img class='zyimg' src='../.." + pics[i] + "'width='100px' height='100px'/>";
+			}
+		} else if (pic != "") {
+			picStr += "<img class='zyimg' src='../.." + pic + "'width='100px' heigth='100px' />";
+		} else {
+			//没有图片
+		}
+		str =  picStr ;
+		$("#showZymypic").append($(str));
+	});
+}, "json")
