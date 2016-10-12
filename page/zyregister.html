@@ -20,7 +20,7 @@
     <div class="header">
     <img src="images/menulogo.png" class="headerimg" />
     <ul class="headerul">
-    	<li><a href="/zyregister.html">注册</a></li>
+    	<!--<li><a href="/zyregister.html">注册</a></li>-->
     	<li><a href="/login.html">登录</a></li>
     </ul>
     </div>
@@ -37,7 +37,9 @@
             <div class="emailRegister">           
                 <form action="/adduser" method="post">
                 <ul>
-                <li><span>电子邮箱：</span><input type="text" name="eml" id="eml" size="40" onblur="checkemail(this,zynumber)"/>
+                <li><span>电子邮箱：</span>
+					<!--<input type="text" name="eml" id="eml" size="40" onblur="checkemail(this,zynumber)"/>-->
+					<input type="text" name="eml" id="eml" size="40" onblur="checkemail(this,'userinfo','uemail')"/>
 					<span class="zynumber" id="zynumber" ></span>
 				<li>
 				请输入验证码：<input type="text" name="tel" id="elma"/>

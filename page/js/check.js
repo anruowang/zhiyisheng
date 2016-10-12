@@ -1,19 +1,42 @@
 //验证邮箱
-function checkemail(obj,zynumber){
+//function checkemail(obj,zynumber){
+//	var reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/g;//邮箱验证
+//	if(reg.test($(obj).val())){
+//		$("#zynumber").html("邮箱验证通过").css({"display":"inline-block","color":"green"});
+//		//$(obj).css("border-color","green");
+//		return true;
+//	}else{
+//		$("#zynumber").html("请填写有效电子邮箱，推荐使用QQ邮箱").css({"display":"inline-block","color":"red"});
+//		//$(obj).css("border-color","red");
+//		return false;
+//	}
+//}
+
+//验证邮箱
+var flag=false;
+function checkemail(obj,tabName,colName){//信息检验
 	var reg=/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/g;//邮箱验证
-	if(reg.test($(obj).val())){
-		$("#zynumber").html("邮箱验证通过").css({"display":"inline-block","color":"green"});
-		//$(obj).css("border-color","green");
-		return true;
+	var info=$(obj).val();
+	if(!reg.test(info)) {
+		$(obj).next().eq(0).text("请填写有效电子邮箱，推荐使用QQ邮箱...").css("color","red");
 	}else{
-		$("#zynumber").html("请填写有效电子邮箱，推荐使用QQ邮箱").css({"display":"inline-block","color":"red"});
-		//$(obj).css("border-color","red");
-		return false;
+		$.get("checkemail",{uemail:info,tabname:tabName,colName:colName},function(data){
+			data= $.trim(data);
+			if(data=="4"){
+				$(obj).next().eq(0).text("邮箱验证通过...").css("color","green");
+				flag=true;
+			}else if(data=="3"){
+				$(obj).next().eq(0).text("该用户已经被占用...").css("color","red");
+				flag=false;
+			}
+		});
 	}
 }
+
+//获取验证码
 function getemail(){
 	$("#getemails").attr("disabled",true);
-	if(checkemail($("#eml"))){
+	if(flag){
 		var eml= $.trim($("#eml").val());
 		$.post("/getlma",{eml:eml},function(data){
 			data= $.trim(data);

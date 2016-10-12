@@ -148,6 +148,33 @@ app.post("/adduser",function(req,res){//用户注册
     }
 })
 
+//检查用户名是否注册
+app.get("/checkemail",function(req,res){//检查用户名是否可用
+    if(req.query.uemail==""){
+        res.send("0");
+    }else{
+        pool.getConnection(function(err,conn){
+            if(err){
+                res.send("1");
+            }else{
+                //参数占位符用1个？ 非参数占位符用两个??
+                conn.query("select * from ?? where ??=?",[req.query.tabname,req.query.colName,req.query.uemail],function(err,result){
+                    if(err){
+                        logger.info(err.message.toString());
+                        res.send("2");
+                    }else{
+                        if(result.length>0){//说明找到了数据
+                            res.send("3");
+                        }else{
+                            res.send("4");
+                        }
+                    }
+                })
+            }
+        })
+    }
+});
+
 app.post("/addZypic",upload.array("zymyPic"),function(req,res){//处理所有上传的图片的请求
     if(req.body.pgroup==""||req.body.premarks==""){
         res.send("0");
