@@ -35,7 +35,7 @@
                     <ul class="dropdown-menu">
                         <li><a href=""><span class="glyphicon glyphicon-cog"></span>账户设置</a> </li>
                         <li><a href=""><span class="glyphicon glyphicon-usd"></span>吱币充值</a> </li>
-                        <li><a href=""><span class="glyphicon glyphicon-off"></span>退出</a></li>
+                        <li><a href="javascript:outUserlogin()"><span class="glyphicon glyphicon-off"></span>退出</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -65,8 +65,8 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-plane"></span>游戏<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href=""><span class="glyphicon glyphicon-th"></span>俄罗斯方块</a> </li>
-                        <li><a href=""><span class="glyphicon glyphicon-leaf"></span>我是大画家</a> </li>
-                        <li><a href=""><span class="glyphicon glyphicon-road"></span>木棍英雄</a></li>
+                        <li><a href="wordgame.html"><span class="glyphicon glyphicon-leaf"></span>我是大画家</a> </li>
+                        <li><a href="stickgame.html"><span class="glyphicon glyphicon-road"></span>木棍英雄</a></li>
                     </ul>
                 </li>
             </ul>
@@ -194,7 +194,16 @@
     <script type="text/javascript" src="../js/jquery.qqFace.js"></script>
     <script src="../js/index.js"></script>
     <script src="../js/showPic.js"></script>
-    
+    <script>
+        function outUserlogin(){
+            $.post("/exit",null,function(data){
+                data= $.trim(data);
+                if(data=="0"){
+                    window.location.href="../login.html";
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

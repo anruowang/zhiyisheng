@@ -235,8 +235,11 @@
                                     <li id="searchF" class="tab-pane">
                                     	<label>朋友账号：</label>
                                         <input type="text" name="fZH" id="fZH" />
-                                        <input type="button" value="查找" class="btn btn-primary"/>
-                                    </li>
+                                        <input type="button" value="查找" class="btn btn-primary" onclick="zysearch()"/>
+                                        <table id="zyfriend" style="border:1px solid #336699;width:240px;margin:20px auto auto 28px;text-align: center">
+                                            <!--<tbody ></tbody>-->
+                                        </table>
+                                                             </li>
                                 </ul>
                             </div>
                         </div>
@@ -352,5 +355,14 @@
     <script type="text/javascript" src="../js/ajaxfileupload.js"></script>
     <script type="text/javascript" src="../js/showPic.js"></script>
     <!-- InstanceEndEditable -->
+    <script>
+        //查询好友
+        function zysearch(){
+            var frd= $("#fZH").val();//输入的好友id
+            $.post("/zysearchf",{uid:frd},function(data){
+                $("#zyfriend").append("<tr><td>账号：</td><td>"+data.uid+"</td></tr><tr><td>昵称：</td></td><td>"+data.uname+"</td></tr><tr><td>邮箱：</td><td>"+data.uemail+"</td></tr><tr><td>性别：</td><td>"+data.usex+"</td></tr><tr><td>地址：</td><td>"+data.uaddress+"</td></tr><tr><td>出生日期：</td><td>"+data.birthday+"</td></tr><tr><td colspan='2'><input type='button' value='添加朋友' style='background:#336699;color:#fff'/></td></tr>");
+            },"json")
+        }
+    </script>
 </body>
 <!-- InstanceEnd --></html>

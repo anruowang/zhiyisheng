@@ -177,6 +177,12 @@ app.get("/checkemail",function(req,res){//检查用户名是否可用
     }
 });
 
+//退出登录
+app.post("/exit",function(req,res){
+        req.session.currentLoginUser.uid=null;
+        res.send("0");
+})
+
 app.post("/addZypic",upload.array("zymyPic"),function(req,res){//处理所有上传的图片的请求
     if(req.body.pgroup==""||req.body.premarks==""){
         res.send("0");
@@ -235,6 +241,26 @@ app.get("/getAllZymypic",function(req,res){//获取所有用户图片信息
     });
 });
 
+//查询好友
+app.post("/zysearchf",function(req,res){
+    if(req.body.uid==undefined){
+        res.send("1");
+    }else{
+        pool.getConnection(function(err,conn){
+            if(err){
+                res.send("2");
+            }else{
+                conn.query("select * from userinfo where uid=?",[req.body.uid],function(err,result){
+                    if(err){
+                        res.send("4");
+                    }else{
+                        res.send(result[0]);
+                    }
+                })
+            }
+        })
+    }
+})
 ///////////////////////////////////////////////////////////////
 app.get("/",function(req,res){//监听"127.0.0.1:8888/"这个路径，指定显示的是login.html页面
     res.sendFile(__dirname+req.url+"/page/login.html");//必须使用绝对路径
