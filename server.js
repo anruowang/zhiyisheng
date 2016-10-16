@@ -260,7 +260,33 @@ app.post("/zysearchf",function(req,res){
             }
         })
     }
-})
+});
+
+//添加好友
+app.post("/zyaddfrd",function(req,res){
+    pool.getConnection(function(err,conn){
+        conn.query("select * from userinfo where uid=?",[req.body.uid],function(err,result){
+            if(err){
+                res.send("1");
+            }else{
+                res.send(result[0]);
+            }
+        })
+    })
+});
+
+//app.post("/zyshowallfid",function(req,res){
+//    pool.getConnection(function(err,conn){
+//        conn.query("select userinfo.*,friendinfo.fid from userinfo,friendinfo where ??=friendinfo.fid",[req.session.currentLoginUser.uid],function(err,result){
+//            if(err){
+//                res.send("1");
+//            }else{
+//                res.send(result[0]);
+//                console.info(result[0]);
+//            }
+//        })
+//    })
+//})
 ///////////////////////////////////////////////////////////////
 app.get("/",function(req,res){//监听"127.0.0.1:8888/"这个路径，指定显示的是login.html页面
     res.sendFile(__dirname+req.url+"/page/login.html");//必须使用绝对路径

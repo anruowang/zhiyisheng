@@ -231,11 +231,15 @@
                                     <li><a href="#searchF" data-toggle="tab">查找朋友</a></li>
                                 </ul>
                                 <ul class="tab-content" id="tabF"><!--设置选项卡里面的内容-->
-                                    <li id="myF" class="tab-pane active">所有好友在这里</li>
+                                    <li id="myF" class="tab-pane active">
+                                        <!--<div id="allmyfrd"></div>-->
+                                        <table id="allmyfrd" style="border:1px solid #336699"></table>
+                                    </li>
                                     <li id="searchF" class="tab-pane">
                                     	<label>朋友账号：</label>
                                         <input type="text" name="fZH" id="fZH" />
                                         <input type="button" value="查找" class="btn btn-primary" onclick="zysearch()"/>
+                                        <input type='button' value='添加朋友' id='addfrd' onclick='addfrd()'/>
                                         <table id="zyfriend" style="border:1px solid #336699;width:240px;margin:20px auto auto 28px;text-align: center">
                                             <!--<tbody ></tbody>-->
                                         </table>
@@ -359,10 +363,24 @@
         //查询好友
         function zysearch(){
             var frd= $("#fZH").val();//输入的好友id
+            $("#zyfriend").html("");
             $.post("/zysearchf",{uid:frd},function(data){
-                $("#zyfriend").append("<tr><td>账号：</td><td>"+data.uid+"</td></tr><tr><td>昵称：</td></td><td>"+data.uname+"</td></tr><tr><td>邮箱：</td><td>"+data.uemail+"</td></tr><tr><td>性别：</td><td>"+data.usex+"</td></tr><tr><td>地址：</td><td>"+data.uaddress+"</td></tr><tr><td>出生日期：</td><td>"+data.birthday+"</td></tr><tr><td colspan='2'><input type='button' value='添加朋友' style='background:#336699;color:#fff'/></td></tr>");
-            },"json")
+                $("#zyfriend").append("<tr><td>账号：</td><td>"+data.uid+"</td></tr><tr><td>昵称：</td></td><td>"+data.uname+"</td></tr><tr><td>邮箱：</td><td>"+data.uemail+"</td></tr><tr><td>性别：</td><td>"+data.usex+"</td></tr><tr><td>地址：</td><td>"+data.uaddress+"</td></tr><tr><td>出生日期：</td><td>"+data.birthday+"</td></tr><tr colspan='2'><td></td></tr>");
+            },"json");
         }
+        function addfrd(){
+            alert("添加好友成功");
+            var frd= $("#fZH").val();
+            console.info(frd);//输入的好友id
+            $.post("/zyaddfrd",{uid:frd},function(data){
+                    $("#allmyfrd").append("<tr><td>账号：</td><td>"+data.uid+"</td></tr><tr><td>昵称：</td></td><td>"+data.uname+"</td></tr><tr><td>邮箱：</td><td>"+data.uemail+"</td></tr><tr><td>性别：</td><td>"+data.usex+"</td></tr><tr><td>地址：</td><td>"+data.uaddress+"</td></tr><tr><td>出生日期：</td><td>"+data.birthday+"</td></tr>");
+            },"json");
+
+        }
+//        $.post("/zyshowallfid",null,function(data){
+//
+//        },"json");
+
     </script>
 </body>
 <!-- InstanceEnd --></html>
